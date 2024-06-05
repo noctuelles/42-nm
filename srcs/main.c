@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 10:28:48 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/05 12:19:33 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/05 12:26:32 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ static t_args_parser_option_entry g_option_entries[] = {{
 static int
 display_help(const t_args_parser_config *config) {
     printf("Usage: %s [option(s)] [file(s)]\n", program_invocation_short_name);
-    printf(" List symbols in [file(s)] (a.out by default)\n");
+    printf(" List symbols in [file(s)] (%s by default)\n", DEFAULT_FILE_STR);
     printf(" The options are:\n");
     ft_args_parser_print_docs(config);
     return (0);
@@ -97,6 +97,9 @@ main(int argc, char **argv) {
         ret_val = display_help(&config);
         goto ret;
     }
+    if (ft_nm.files == NULL) {
+        ft_lstadd_back(&ft_nm.files, ft_lstnew(DEFAULT_FILE_STR));
+    }
     for (t_list *elem = ft_nm.files; elem != NULL; elem = elem->next) {
         pathname  = elem->content;
         curr_file = load_file(pathname);
@@ -106,6 +109,7 @@ main(int argc, char **argv) {
         if (ft_lstsize(ft_nm.files) > 1) {
             printf("\n%s:\n", pathname);
         }
+
         // elf parsing...
 
         free_file(curr_file);
