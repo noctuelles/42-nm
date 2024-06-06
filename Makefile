@@ -6,9 +6,11 @@
 #    By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/05 11:17:26 by plouvel           #+#    #+#              #
-#    Updated: 2024/06/06 15:04:01 by plouvel          ###   ########.fr        #
+#    Updated: 2024/06/06 16:25:29 by plouvel          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
+
+#Paths
 
 BUILD_DIR=build
 OBJS_DIR=$(BUILD_DIR)/objs
@@ -29,6 +31,18 @@ OBJS=$(addprefix $(OBJS_DIR)/, $(SRCS:.c=.o))
 DEPS=$(OBJS:.o=.d)
 HEADS=$(addprefix -I, $(INCLUDES_DIR))
 
+
+# Byte Order
+
+BYTE_ORDER=$(shell lscpu | grep "Byte Order:" | awk '{print $$3 $$4}')
+
+ifeq ($(BYTE_ORDER),LittleEndian)
+	BYTE_ORDER=1234
+else ifeq ($(BYTE_ORDER),BigEndian)
+	BYTE_ORDER=3412
+else
+	$(error Unrecognized byte order)
+endif
 
 NAME=ft_nm
 
@@ -51,7 +65,7 @@ $(NAME): $(LIBFT) $(OBJS) Makefile
 	$(CC) $(OBJS) $(LIBFT) $(DEBUG_FLAGS) -L $(LIBFT_DIR) -lft -o $@
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(HEADS) -MMD $(DEBUG_FLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(HEADS) -MMD $(DEBUG_FLAGS) -DBYTE_ORDER=$(BYTE_ORDER) -c $< -o $@
 $(LIBFT): $(LIBFT_SRCS)
 	$(MAKE) -C $(LIBFT_DIR) all
 
