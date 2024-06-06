@@ -6,7 +6,7 @@
 #    By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/05 11:17:26 by plouvel           #+#    #+#              #
-#    Updated: 2024/06/05 12:56:03 by plouvel          ###   ########.fr        #
+#    Updated: 2024/06/06 15:04:01 by plouvel          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,12 +22,13 @@ SRCS=main.c \
 	 parsing/opts.c \
 	 ft_nm.c \
 	 file.c
-
+LIBFT_SRCS = $(wildcard $(LIBFT_DIR)/srcs/**/*.c)
 LIBFT=$(LIBFT_DIR)/libft.a
 
 OBJS=$(addprefix $(OBJS_DIR)/, $(SRCS:.c=.o))
 DEPS=$(OBJS:.o=.d)
 HEADS=$(addprefix -I, $(INCLUDES_DIR))
+
 
 NAME=ft_nm
 
@@ -51,7 +52,7 @@ $(NAME): $(LIBFT) $(OBJS) Makefile
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $(HEADS) -MMD $(DEBUG_FLAGS) -c $< -o $@
-$(LIBFT):
+$(LIBFT): $(LIBFT_SRCS)
 	$(MAKE) -C $(LIBFT_DIR) all
 
 -include $(DEPS)
