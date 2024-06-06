@@ -1,3 +1,6 @@
 [submodule "libft"]
 	path = libft
 	url = https://github.com/noctuelles/42-libft.git
+[submodule "unity"]
+	path = unity
+	url = https://github.com/ThrowTheSwitch/Unity.git
