@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 11:37:18 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/05 12:12:00 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/06 15:33:27 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,12 +99,12 @@ free_file(t_file *file) {
  * @param file The file to read.
  * @param range_start The start of the range, inclusive.
  * @param range_end The end of the range, exclusive.
- * @return const uint8_t* A pointer to the start of the range if it is valid, or
+ * @return const void* A pointer to the start of the range if it is valid, or
  * NULL otherwise.
  *
  * @note range_start must be less than range_end.
  */
-const uint8_t *
+const void *
 try_read_file(const t_file *file, size_t range_start, size_t range_end) {
     assert(file != NULL);
     assert(range_start < range_end);
