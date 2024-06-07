@@ -6,7 +6,7 @@
 #    By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/05 11:17:26 by plouvel           #+#    #+#              #
-#    Updated: 2024/06/07 23:03:28 by plouvel          ###   ########.fr        #
+#    Updated: 2024/06/07 23:08:45 by plouvel          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -119,7 +119,7 @@ $(TEST_RESULTS_PATH)/%.txt: $(BUILD_PATH)/%.$(TARGET_EXTENSION)
 	-./$< > $@ 2>&1
 
 # Rule to link the test runner
-$(BUILD_PATH)/test_%.$(TARGET_EXTENSION): $(OBJS_PATH)/test_%.o $(OBJS_PATH)/unity.o $(OBJS_PATH)/%.o $(LIBFT)
+$(BUILD_PATH)/test_%.$(TARGET_EXTENSION): $(OBJS_PATH)/test_%.o $(OBJS_PATH)/unity.o $(filter-out build/objs/main.o, $(OBJS)) $(LIBFT)
 	$(LINK) -o $@ $^ 
 
 # Rule to compile the files of the project
