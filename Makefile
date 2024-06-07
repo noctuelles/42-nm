@@ -6,7 +6,7 @@
 #    By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/05 11:17:26 by plouvel           #+#    #+#              #
-#    Updated: 2024/06/07 14:26:58 by plouvel          ###   ########.fr        #
+#    Updated: 2024/06/07 23:03:28 by plouvel          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,21 +31,28 @@ ALL_INCLUDE=$(PROJECT_INCLUDE) $(UNITY_INCLUDE)
 # Sources
 
 SRCS=main.c \
-	 parsing/opts.c \
-	 parsing/elf.c \
+	 parsing_elf.c \
+	 parsing_opts.c \
 	 ft_nm.c \
 	 utils.c \
 	 file.c
-SRCS_TEST=$(addprefix $(TESTS_PATH)/, parsing/test_elf.c test_utils.c test_file.c)
+
+TESTS=test_parsing_elf.c \
+	  test_utils.c \
+	  test_file.c
+
+SRCS_TESTS:=$(addprefix $(TESTS_PATH)/, $(TESTS))
+
 LIBFT_SRCS = $(wildcard $(LIBFT_PATH)/srcs/**/*.c)
 
 # Output
 
 OBJS=$(addprefix $(OBJS_PATH)/, $(SRCS:.c=.o))
-TEST_RESULTS=$(patsubst $(TESTS_PATH)/test_%.c, $(TEST_RESULTS_PATH)/test_%.txt,$(SRCS_TEST))
+TEST_RESULTS=$(addprefix $(TEST_RESULTS_PATH)/, $(TESTS:.c=.txt))
 HEADS=$(addprefix -I, $(INCLUDES_DIR))
 
 $(info $(TEST_RESULTS))
+$(eval $(exit 0))
 
 # Byte Order
 

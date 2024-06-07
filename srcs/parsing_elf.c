@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   elf.c                                              :+:      :+:    :+:   */
+/*   parsing_elf.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 15:05:22 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/07 15:59:57 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/07 23:04:25 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parsing/elf.h"
+#include "parsing_elf.h"
 
 #include <assert.h>
 
@@ -42,7 +42,7 @@ elf_parse_error_to_string(t_elf_parse_error error) {
  * @return t_elf_parse_error ELF_PARSE_OK if the file is a valid ELF file, ELF_PARSE_FILE_TOO_SHORT if the file is too
  * short to contain the ELF header, ELF_PARSE_UNRECOGNIZED_FORMAT if the file is not an ELF file.
  */
-static t_elf_parse_error
+t_elf_parse_error
 parse_elf_hdr_ident(const t_file *file, t_elf_parsing_context *context) {
     const Elf32_Ehdr *header  = NULL;
     const uint8_t     magic[] = {ELFMAG0, ELFMAG1, ELFMAG2, ELFMAG3};
@@ -65,7 +65,7 @@ parse_elf_hdr_ident(const t_file *file, t_elf_parsing_context *context) {
     return (ELF_PARSE_OK);
 }
 
-static t_elf_parse_error
+t_elf_parse_error
 parse_elf_hdr_shdr(const t_file *file, t_elf_parsing_context *context) {
     assert(context->class != ELF_CLASS_UNDEF);
     assert(context->endianess != ELF_ENDIAN_UNDEF);
@@ -103,10 +103,10 @@ parse_elf_hdr_shdr(const t_file *file, t_elf_parsing_context *context) {
         shdr_entry_size = uint16_t_BE_to_host_byte_order(shdr_entry_size);
     }
 
-    context->shdr_table_entry_size = shdr_entry_size;
-    context->shdr_table_nbr        = shdr_nbr;
-    context->shdr_table            = try_read_file(file, shdr_offset, shdr_offset + (shdr_nbr * shdr_entry_size));
-    if (context->shdr_table == NULL) {
+    context->shdr_entry_size = shdr_entry_size;
+    context->shdr_nbr        = shdr_nbr;
+    context->shdr_start      = try_read_file(file, shdr_offset, shdr_offset + (shdr_nbr * shdr_entry_size));
+    if (context->shdr_start == NULL) {
         return (ELF_PARSE_FILE_TOO_SHORT);
     }
 
@@ -114,16 +114,36 @@ parse_elf_hdr_shdr(const t_file *file, t_elf_parsing_context *context) {
 }
 
 t_elf_parse_error
-parse_elf_shdr_symbols(const t_file *file, const t_elf_parsing_context *context) {
-    const uint8_t *shdr_table = NULL;
-    size_t         n          = 0;
+parse_elf_shdr_symtab(const t_file *file, t_elf_parsing_context *context) {
+    size_t         i           = 0;
+    const uint8_t *section_ptr = NULL;
+    (void)file;
 
-    assert(context->class != ELF_CLASS_UNDEF);
-    assert(context->endianess != ELF_ENDIAN_UNDEF);
-    assert(context->shdr_table != NULL);
+    // const uint8_t *symtab_ptr           = NULL;
+    // const uint8_t *symtab_str_table_ptr = NULL;
 
-    while (n < context->shdr_table_nbr) {
-        shdr_table = context->shdr_table + (n * context->shdr_table_entry_size);
-        n++;
+    // size_t symtab_size = 0;
+
+    while (i < context->shdr_nbr) {
+        section_ptr = context->shdr_start + (i * context->shdr_entry_size);
+        if (((const Elf32_Shdr *)section_ptr)->sh_type == SHT_SYMTAB) {
+        }
+        i++;
     }
+    return (ELF_PARSE_OK);
 }
+
+// t_elf_parse_error
+// parse_elf_shdr_symbols(const t_file *file, const t_elf_parsing_context *context) {
+//     const uint8_t *shdr_table = NULL;
+//     size_t         n          = 0;
+
+//     assert(context->class != ELF_CLASS_UNDEF);
+//     assert(context->endianess != ELF_ENDIAN_UNDEF);
+//     assert(context->shdr_table != NULL);
+
+//     while (n < context->shdr_table_nbr) {
+//         shdr_table = context->shdr_table + (n * context->shdr_table_entry_size);
+//         n++;
+//     }
+// }

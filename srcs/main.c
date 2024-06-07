@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 10:28:48 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/07 15:11:07 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/07 23:03:09 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@
 #include "file.h"
 #include "ft_args_parser.h"
 #include "ft_nm.h"
-#include "parsing/elf.h"
-#include "parsing/opts.h"
+#include "parsing_elf.h"
+#include "parsing_opts.h"
 
 extern char *program_invocation_short_name;
 

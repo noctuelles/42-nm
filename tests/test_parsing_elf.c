@@ -1,27 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   symbol.h                                           :+:      :+:    :+:   */
+/*   test_parsing_elf.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/06 15:07:04 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/06 15:33:35 by plouvel          ###   ########.fr       */
+/*   Created: 2024/06/07 14:18:32 by plouvel           #+#    #+#             */
+/*   Updated: 2024/06/07 23:02:52 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SYMBOL_H
-#define SYMBOL_H
-#include <stdint.h>
+#include "parsing_elf.h"
+#include "unity.h"
 
-typedef enum e_symbol_type { SYMBOL_TYPE_32, SYMBOL_TYPE_64 } t_symbol_type;
+void
+setUp(void) {}
 
-typedef struct s_symbol {
-    const char *name;
-    union value {
-        uint32_t _32;
-        uint64_t _64;
-    };
-} t_symbol;
+void
+tearDown(void) {}
 
-#endif
+int
+main(void) {
+    UNITY_BEGIN();
+    return (UNITY_END());
+}
