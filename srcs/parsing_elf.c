@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 15:05:22 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/07 23:04:25 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/07 23:33:23 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,8 @@ parse_elf_hdr_ident(const t_file *file, t_elf_parsing_context *context) {
     const Elf32_Ehdr *header  = NULL;
     const uint8_t     magic[] = {ELFMAG0, ELFMAG1, ELFMAG2, ELFMAG3};
 
-    header = try_read_file(file, 0, sizeof(*header));
+    context->start = try_read_file(file, 0, sizeof(*header));
+    header         = (Elf32_Ehdr *)context->start;
     if (header == NULL) {
         return (ELF_PARSE_FILE_TOO_SHORT);
     }
@@ -114,20 +115,46 @@ parse_elf_hdr_shdr(const t_file *file, t_elf_parsing_context *context) {
 }
 
 t_elf_parse_error
+parse_elf_symtab() {}
+
+t_elf_parse_error
 parse_elf_shdr_symtab(const t_file *file, t_elf_parsing_context *context) {
-    size_t         i           = 0;
-    const uint8_t *section_ptr = NULL;
-    (void)file;
+    size_t      i   = 0;
+    const void *sec = NULL;
 
-    // const uint8_t *symtab_ptr           = NULL;
-    // const uint8_t *symtab_str_table_ptr = NULL;
-
-    // size_t symtab_size = 0;
+    const uint8_t *symtab              = NULL;
+    size_t         e_symtab_offset     = 0;
+    size_t         e_symtab_entry_size = 0;
+    size_t         e_symtab_size       = 0;
 
     while (i < context->shdr_nbr) {
-        section_ptr = context->shdr_start + (i * context->shdr_entry_size);
-        if (((const Elf32_Shdr *)section_ptr)->sh_type == SHT_SYMTAB) {
+        sec = context->shdr_start + (i * context->shdr_entry_size);
+        if (((const Elf32_Shdr *)sec)->sh_type == SHT_SYMTAB) {
+            if (context->class == ELF_CLASS_32) {
+                Elf32_Off symtab_offset     = context->start + ((const Elf32_Shdr *)sec)->sh_offset;
+                uint32_t  symtab_entry_size = ((const Elf32_Shdr *)sec)->sh_entsize;
+                uint32_t  symtab_size       = ((const Elf32_Shdr *)sec)->sh_size;
+
+                if (context->endianess == ELF_ENDIAN_BIG) {
+                    symtab_offset     = uint32_t_BE_to_host_byte_order(symtab_offset);
+                    symtab_entry_size = uint32_t_BE_to_host_byte_order(symtab_entry_size);
+                    symtab_size       = uint32_t_BE_to_host_byte_order(symtab_size);
+                } else {
+                    symtab_offset     = uint32_t_LE_to_host_byte_order(symtab_offset);
+                    symtab_entry_size = uint32_t_LE_to_host_byte_order(symtab_entry_size);
+                    symtab_size       = uint32_t_LE_to_host_byte_order(symtab_size);
+                }
+
+                e_symtab_entry_size = symtab_entry_size;
+                e_symtab_size       = symtab_size;
+            } else {
+            }
+            symtab = try_read_file(file, e_symtab_offset, e_symtab_offset + e_symtab_size);
+            if (symtab == NULL) {
+                return (ELF_PARSE_NO_SHDR_TABLE);
+            }
         }
+
         i++;
     }
     return (ELF_PARSE_OK);

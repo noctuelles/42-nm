@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   elf.h                                              :+:      :+:    :+:   */
+/*   parsing_elf.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 14:16:31 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/07 21:45:52 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/07 23:22:01 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,16 @@ typedef struct s_elf_parsing_context {
     t_elf_class class;
     t_elf_endianess endianess;
 
+    const uint8_t *start;
+
     const uint8_t *shdr_start;
     size_t         shdr_entry_size;
     size_t         shdr_nbr;
 
     const uint8_t *curr_section;
     const uint8_t *curr_section_str_table;
+
+    const uint8_t *curr_symtab;
 
 } t_elf_parsing_context;
 
