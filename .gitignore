@@ -2,7 +2,11 @@
 !includes
 !srcs
 !libft
+!unity
 !Makefile
+!tests
+!assets
+!.clang-format
 !.gitignore
 !.gitsubmodules
 en.subject.pdf

@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 10:28:48 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/06 21:56:54 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/07 15:11:07 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include "file.h"
 #include "ft_args_parser.h"
 #include "ft_nm.h"
+#include "parsing/elf.h"
 #include "parsing/opts.h"
 
 extern char *program_invocation_short_name;
@@ -102,31 +103,17 @@ main(int argc, char **argv) {
         ft_lstadd_back(&ft_nm.files, ft_lstnew(DEFAULT_FILE_STR));
     }
     for (t_list *elem = ft_nm.files; elem != NULL; elem = elem->next) {
+        t_elf_parsing_context context = {0};
+
         pathname  = elem->content;
         curr_file = load_file(pathname);
         if (curr_file == NULL) {
             continue;
         }
+        parse_elf_hdr_ident(curr_file, &context);
+        parse_elf_hdr_shdr(curr_file, &context);
         if (ft_lstsize(ft_nm.files) > 1) {
             printf("\n%s:\n", pathname);
-        }
-
-        const Elf64_Ehdr *header = try_read_file(curr_file, 0, sizeof(*header));
-        if (header == NULL) {
-            return (1);
-        }
-        const Elf64_Shdr *section_hdr =
-            try_read_file(curr_file, (size_t)header->e_shoff, header->e_shoff + header->e_shnum * header->e_shentsize);
-        if (section_hdr == NULL) {
-            return (1);
-        }
-        for (size_t i = 0; i < header->e_shnum; i++) {
-            if (section_hdr[i].sh_type != SHT_SYMTAB) {
-                continue;
-            }
-            char *chr = (char *)header + section_hdr[header->e_shstrndx].sh_offset + section_hdr[i].sh_name;
-
-            printf("Section %s\n", chr);
         }
 
         // elf parsing...

@@ -6,7 +6,7 @@
 #    By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/05 11:17:26 by plouvel           #+#    #+#              #
-#    Updated: 2024/06/07 12:26:29 by plouvel          ###   ########.fr        #
+#    Updated: 2024/06/07 14:26:58 by plouvel          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,18 +32,20 @@ ALL_INCLUDE=$(PROJECT_INCLUDE) $(UNITY_INCLUDE)
 
 SRCS=main.c \
 	 parsing/opts.c \
+	 parsing/elf.c \
 	 ft_nm.c \
 	 utils.c \
 	 file.c
-SRCS_TEST=$(wildcard $(TESTS_PATH)/*.c)
+SRCS_TEST=$(addprefix $(TESTS_PATH)/, parsing/test_elf.c test_utils.c test_file.c)
 LIBFT_SRCS = $(wildcard $(LIBFT_PATH)/srcs/**/*.c)
-
 
 # Output
 
 OBJS=$(addprefix $(OBJS_PATH)/, $(SRCS:.c=.o))
 TEST_RESULTS=$(patsubst $(TESTS_PATH)/test_%.c, $(TEST_RESULTS_PATH)/test_%.txt,$(SRCS_TEST))
 HEADS=$(addprefix -I, $(INCLUDES_DIR))
+
+$(info $(TEST_RESULTS))
 
 # Byte Order
 
@@ -116,7 +118,7 @@ $(BUILD_PATH)/test_%.$(TARGET_EXTENSION): $(OBJS_PATH)/test_%.o $(OBJS_PATH)/uni
 # Rule to compile the files of the project
 $(OBJS_PATH)/%.o:: $(SRCS_PATH)/%.c
 	@$(MKDIR) $(dir $@)
-	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $(PROJECT_INCLUDE) -c $< -o $@
+	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $(PROJECT_INCLUDE) -DBYTE_ORDER=$(BYTE_ORDER) -c $< -o $@
 
 # Rule to compile the Unity Framework
 $(OBJS_PATH)/%.o:: $(UNITY_PATH)/%.c $(UNITY_PATH)/%.h | $(OBJS_PATH)
@@ -124,7 +126,7 @@ $(OBJS_PATH)/%.o:: $(UNITY_PATH)/%.c $(UNITY_PATH)/%.h | $(OBJS_PATH)
 
 # Rule to compile the tests of the project
 $(OBJS_PATH)/%.o:: $(TESTS_PATH)/%.c | $(OBJS_PATH)
-	$(CC) $(DEBUG_FLAGS) $(ALL_INCLUDE) -c $< -o $@
+	$(CC) $(DEBUG_FLAGS) $(ALL_INCLUDE) -DBYTE_ORDER=$(BYTE_ORDER) -c $< -o $@
 
 $(LIBFT):
 	$(MAKE) -C $(LIBFT_PATH)

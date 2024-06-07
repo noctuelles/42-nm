@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 15:05:22 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/07 14:59:09 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/07 15:59:57 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,22 @@
 #include "libft.h"
 #include "utils.h"
 
+const char *
+elf_parse_error_to_string(t_elf_parse_error error) {
+    switch (error) {
+        case ELF_PARSE_OK:
+            return ("sucess");
+        case ELF_PARSE_FILE_TOO_SHORT:
+            return ("file too short");
+        case ELF_PARSE_NO_SHDR_TABLE:
+            return ("no section header table");
+        case ELF_PARSE_UNRECOGNIZED_FORMAT:
+            return ("file format not recognized");
+        default:
+            return ("unknown error");
+    }
+}
+
 /**
  * @brief Parse the ELF header identification bytes.
  *
@@ -26,7 +42,7 @@
  * @return t_elf_parse_error ELF_PARSE_OK if the file is a valid ELF file, ELF_PARSE_FILE_TOO_SHORT if the file is too
  * short to contain the ELF header, ELF_PARSE_UNRECOGNIZED_FORMAT if the file is not an ELF file.
  */
-t_elf_parse_error
+static t_elf_parse_error
 parse_elf_hdr_ident(const t_file *file, t_elf_parsing_context *context) {
     const Elf32_Ehdr *header  = NULL;
     const uint8_t     magic[] = {ELFMAG0, ELFMAG1, ELFMAG2, ELFMAG3};
@@ -49,7 +65,7 @@ parse_elf_hdr_ident(const t_file *file, t_elf_parsing_context *context) {
     return (ELF_PARSE_OK);
 }
 
-t_elf_parse_error
+static t_elf_parse_error
 parse_elf_hdr_shdr(const t_file *file, t_elf_parsing_context *context) {
     assert(context->class != ELF_CLASS_UNDEF);
     assert(context->endianess != ELF_ENDIAN_UNDEF);
@@ -73,6 +89,10 @@ parse_elf_hdr_shdr(const t_file *file, t_elf_parsing_context *context) {
         shdr_nbr        = ((const Elf64_Ehdr *)elf_hdr)->e_shnum;
         shdr_entry_size = ((const Elf64_Ehdr *)elf_hdr)->e_shentsize;
     }
+    if (shdr_nbr == 0) {
+        return (ELF_PARSE_NO_SHDR_TABLE);
+    }
+
     if (context->endianess == ELF_ENDIAN_LITTLE) {
         shdr_offset     = uint16_t_LE_to_host_byte_order(shdr_offset);
         shdr_nbr        = uint16_t_LE_to_host_byte_order(shdr_nbr);
@@ -85,10 +105,25 @@ parse_elf_hdr_shdr(const t_file *file, t_elf_parsing_context *context) {
 
     context->shdr_table_entry_size = shdr_entry_size;
     context->shdr_table_nbr        = shdr_nbr;
-    context->shdr_table            = try_read_file(file, shdr_offset, shdr_nbr * shdr_entry_size);
+    context->shdr_table            = try_read_file(file, shdr_offset, shdr_offset + (shdr_nbr * shdr_entry_size));
     if (context->shdr_table == NULL) {
         return (ELF_PARSE_FILE_TOO_SHORT);
     }
 
     return (ELF_PARSE_OK);
+}
+
+t_elf_parse_error
+parse_elf_shdr_symbols(const t_file *file, const t_elf_parsing_context *context) {
+    const uint8_t *shdr_table = NULL;
+    size_t         n          = 0;
+
+    assert(context->class != ELF_CLASS_UNDEF);
+    assert(context->endianess != ELF_ENDIAN_UNDEF);
+    assert(context->shdr_table != NULL);
+
+    while (n < context->shdr_table_nbr) {
+        shdr_table = context->shdr_table + (n * context->shdr_table_entry_size);
+        n++;
+    }
 }
