@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 11:37:18 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/06 15:33:27 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/07 14:05:40 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,10 +86,10 @@ ret:
  * @param file The file to free.
  */
 void
-free_file(t_file *file) {
+free_file(const t_file *file) {
     if (file != NULL) {
         (void)munmap(file->buf_start, file->buf_end - file->buf_start);
-        free(file);
+        free((t_file *)file);
     }
 }
 
@@ -102,16 +102,19 @@ free_file(t_file *file) {
  * @return const void* A pointer to the start of the range if it is valid, or
  * NULL otherwise.
  *
- * @note range_start must be less than range_end.
+ * @note range_start must be less than range_end, and both are zero-indexed.
  */
 const void *
 try_read_file(const t_file *file, size_t range_start, size_t range_end) {
     assert(file != NULL);
-    assert(range_start < range_end);
 
-    if (range_start + range_end > (size_t)(file->buf_end - file->buf_start)) {
+    if (range_start >= range_end) {
         return (NULL);
     }
+    if (!(file->buf_start + range_start < file->buf_end && file->buf_start + range_end <= file->buf_end)) {
+        return (NULL);
+    }
+
     return (file->buf_start + range_start);
 }
 

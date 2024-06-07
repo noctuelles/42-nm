@@ -6,12 +6,13 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 10:28:48 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/05 12:26:32 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/06 21:56:54 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 
+#include "elf_utils.h"
 #include "file.h"
 #include "ft_args_parser.h"
 #include "ft_nm.h"
@@ -87,7 +88,7 @@ main(int argc, char **argv) {
                                       .default_argument_parse_fn = parse_argument,
                                       .input                     = &ft_nm};
     int                  ret_val   = -1;
-    t_file              *curr_file = NULL;
+    const t_file        *curr_file = NULL;
     const char          *pathname  = NULL;
 
     if (ft_args_parser(&config) != 0) {
@@ -108,6 +109,24 @@ main(int argc, char **argv) {
         }
         if (ft_lstsize(ft_nm.files) > 1) {
             printf("\n%s:\n", pathname);
+        }
+
+        const Elf64_Ehdr *header = try_read_file(curr_file, 0, sizeof(*header));
+        if (header == NULL) {
+            return (1);
+        }
+        const Elf64_Shdr *section_hdr =
+            try_read_file(curr_file, (size_t)header->e_shoff, header->e_shoff + header->e_shnum * header->e_shentsize);
+        if (section_hdr == NULL) {
+            return (1);
+        }
+        for (size_t i = 0; i < header->e_shnum; i++) {
+            if (section_hdr[i].sh_type != SHT_SYMTAB) {
+                continue;
+            }
+            char *chr = (char *)header + section_hdr[header->e_shstrndx].sh_offset + section_hdr[i].sh_name;
+
+            printf("Section %s\n", chr);
         }
 
         // elf parsing...
