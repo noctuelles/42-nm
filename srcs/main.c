@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 10:28:48 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/07 23:03:09 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/08 11:22:44 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,17 +103,13 @@ main(int argc, char **argv) {
         ft_lstadd_back(&ft_nm.files, ft_lstnew(DEFAULT_FILE_STR));
     }
     for (t_list *elem = ft_nm.files; elem != NULL; elem = elem->next) {
-        t_elf_parsing_context context = {0};
-
         pathname  = elem->content;
         curr_file = load_file(pathname);
         if (curr_file == NULL) {
             continue;
         }
-        parse_elf_hdr_ident(curr_file, &context);
-        parse_elf_hdr_shdr(curr_file, &context);
-        if (ft_lstsize(ft_nm.files) > 1) {
-            printf("\n%s:\n", pathname);
+        if (parse_elf_symbols(curr_file) == NULL) {
+            continue;
         }
 
         // elf parsing...

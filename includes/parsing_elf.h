@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 14:16:31 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/07 23:22:01 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/08 13:16:26 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 #include "elf_utils.h"
 #include "file.h"
+#include "libft.h"
 
 typedef enum e_elf_parse_error {
     ELF_PARSE_OK,
@@ -23,20 +24,31 @@ typedef enum e_elf_parse_error {
     ELF_PARSE_UNRECOGNIZED_FORMAT,
 } t_elf_parse_error;
 
+typedef struct s_elf_parsed_shdr {
+    const uint8_t *sec_ptr;
+    size_t         sec_size;
+    size_t         sec_ent_size;
+    size_t         sec_off;
+    size_t         sec_link_val;
+} t_elf_parsed_shdr;
+
 typedef struct s_elf_parsing_context {
     t_elf_class class;
     t_elf_endianess endianess;
-
-    const uint8_t *start;
 
     const uint8_t *shdr_start;
     size_t         shdr_entry_size;
     size_t         shdr_nbr;
 
     const uint8_t *curr_section;
-    const uint8_t *curr_section_str_table;
+    size_t         curr_section_size;
+    size_t         curr_section_entry_size;
+    size_t         curr_section_offset;
+    size_t         curr_section_link_value;
 
-    const uint8_t *curr_symtab;
+    const uint8_t *curr_section_strtab;
+
+    const uint8_t *curr_symtab_str_table;
 
 } t_elf_parsing_context;
 
@@ -48,8 +60,10 @@ typedef struct s_elf_symbol {
     } value;
 } t_elf_symbol;
 
-const char       *elf_parse_error_to_string(t_elf_parse_error error);
 t_elf_parse_error parse_elf_hdr_ident(const t_file *file, t_elf_parsing_context *context);
 t_elf_parse_error parse_elf_hdr_shdr(const t_file *file, t_elf_parsing_context *context);
+t_elf_parse_error parse_elf_shdrs(const t_file *file, t_elf_parsing_context *context);
+
+t_list *parse_elf_symbols(const t_file *file);
 
 #endif
