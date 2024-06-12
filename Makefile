@@ -6,7 +6,7 @@
 #    By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/05 11:17:26 by plouvel           #+#    #+#              #
-#    Updated: 2024/06/07 23:08:45 by plouvel          ###   ########.fr        #
+#    Updated: 2024/06/11 19:49:38 by plouvel          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,8 +31,12 @@ ALL_INCLUDE=$(PROJECT_INCLUDE) $(UNITY_INCLUDE)
 # Sources
 
 SRCS=main.c \
-	 parsing_elf.c \
+	 parse_elf_hdr.c \
+	 parse_elf_shdr.c \
+	 parse_elf_symbol.c \
+	 parse_elf.c \
 	 parsing_opts.c \
+	 symbol.c \
 	 ft_nm.c \
 	 utils.c \
 	 file.c

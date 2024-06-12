@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 10:28:48 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/08 11:22:44 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/11 20:00:27 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include "file.h"
 #include "ft_args_parser.h"
 #include "ft_nm.h"
-#include "parsing_elf.h"
+#include "parse_elf.h"
 #include "parsing_opts.h"
 
 extern char *program_invocation_short_name;
@@ -108,7 +108,10 @@ main(int argc, char **argv) {
         if (curr_file == NULL) {
             continue;
         }
-        if (parse_elf_symbols(curr_file) == NULL) {
+        t_list *symlist = NULL;
+        symlist         = parse_elf_symbols(curr_file);
+        if (symlist == NULL) {
+            free_file(curr_file);
             continue;
         }
 

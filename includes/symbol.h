@@ -1,32 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   symbol.c                                           :+:      :+:    :+:   */
+/*   symbol.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/06 15:06:57 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/12 14:19:05 by plouvel          ###   ########.fr       */
+/*   Created: 2024/06/08 16:56:41 by plouvel           #+#    #+#             */
+/*   Updated: 2024/06/12 11:23:52 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "symbol.h"
+#ifndef SYMBOL_H
+#define SYMBOL_H
 
-#include <stdlib.h>
+#include <elf.h>
 
 #include "libft.h"
+#include "parse_elf.h"
 
-t_list *
-new_symbol_elem() {
-    t_list   *elem   = NULL;
-    t_symbol *symbol = NULL;
+typedef struct s_symbol {
+    t_elf_parsed_symbol elf_parsed_symbol;
+    t_elf_parsed_shdr   elf_parsed_related_shdr;
+} t_symbol;
 
-    if ((symbol = malloc(sizeof(*symbol))) == NULL) {
-        return (NULL);
-    }
-    if ((elem = ft_lstnew(symbol)) == NULL) {
-        free(symbol);
-        return (NULL);
-    }
-    return (elem);
-}
+t_list *new_symbol_elem();
+
+#endif

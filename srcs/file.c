@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 11:37:18 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/07 14:05:40 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/12 12:31:40 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,4 +121,23 @@ try_read_file(const t_file *file, size_t range_start, size_t range_end) {
 size_t
 get_file_size(const t_file *file) {
     return (file->buf_end - file->buf_start);
+}
+
+/**
+ * @brief Get the offset of a pointer in a file.
+ *
+ * @param file The file to get the offset from.
+ * @param ptr The pointer to get the offset of.
+ * @return size_t The offset of the pointer in the file.
+ */
+size_t
+get_file_ptr_offset(const t_file *file, const void *ptr) {
+    return ((const uint8_t *)ptr - file->buf_start);
+}
+
+const void *
+get_file_ptr_from_offset(const t_file *file, size_t offset) {
+    assert(file != NULL);
+    assert(offset < get_file_size(file));
+    return (file->buf_start + offset);
 }
