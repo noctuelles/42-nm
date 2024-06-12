@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 14:16:31 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/12 14:53:02 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/12 15:54:23 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,14 +48,14 @@ typedef struct s_elf_parsed_shdr {
     size_t type;
 } t_elf_parsed_shdr;
 
-typedef struct s_elf_parsed_symbol {
+typedef struct s_elf_parsed_sym {
     size_t   value;
     size_t   size;
     uint32_t name;
     uint16_t shndx;
     uint8_t  info;
     uint8_t  other;
-} t_elf_parsed_symbol;
+} t_elf_parsed_sym;
 
 t_elf_parsed_hdr  parse_elf_hdr(const void *elf_hdr);
 t_elf_parse_error check_elf_hdr(const t_file *file, const t_elf_parsed_hdr *hdr);
@@ -63,6 +63,10 @@ t_elf_parse_error check_elf_hdr(const t_file *file, const t_elf_parsed_hdr *hdr)
 t_elf_parsed_shdr parse_elf_shdr(const void *shdr, const t_elf_parsed_hdr *hdr);
 t_elf_parse_error check_elf_shdr_symtab(const t_file *file, const t_elf_parsed_shdr *shdr, const t_elf_parsed_hdr *hdr);
 t_elf_parse_error check_elf_shdr_strtab(const t_file *file, const t_elf_parsed_shdr *shdr);
+
+t_elf_parsed_sym  parse_elf_sym(const void *symbol, const t_elf_parsed_hdr *hdr);
+t_elf_parse_error check_elf_sym(const t_file *file, const t_elf_parsed_sym *sym, const t_elf_parsed_shdr *strtab_shdr);
+const char       *get_sym_name(const t_file *file, const t_elf_parsed_sym *sym, const t_elf_parsed_shdr *strtab_shdr);
 
 t_list *parse_elf_symbols(const t_file *file);
 
