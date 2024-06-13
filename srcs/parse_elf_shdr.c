@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 15:43:54 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/12 14:52:54 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/13 15:00:37 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ parse_elf_shdr_32(const Elf32_Shdr *shdr, const t_elf_parsed_hdr *parsed_hdr, t_
     uint32_t  link_val = shdr->sh_link;
     uint32_t  flags    = shdr->sh_flags;
     uint32_t  type     = shdr->sh_type;
+    uint32_t  name     = shdr->sh_name;
 
     if (parsed_hdr->ei_endianess == ELFDATA2MSB) {
         off      = uint32_t_BE_to_host_byte_order(off);
@@ -29,6 +30,7 @@ parse_elf_shdr_32(const Elf32_Shdr *shdr, const t_elf_parsed_hdr *parsed_hdr, t_
         link_val = uint32_t_BE_to_host_byte_order(link_val);
         flags    = uint32_t_BE_to_host_byte_order(flags);
         type     = uint32_t_BE_to_host_byte_order(type);
+        name     = uint32_t_BE_to_host_byte_order(name);
     } else if (parsed_hdr->ei_endianess == ELFDATA2LSB) {
         off      = uint32_t_LE_to_host_byte_order(off);
         ent_size = uint32_t_LE_to_host_byte_order(ent_size);
@@ -36,6 +38,7 @@ parse_elf_shdr_32(const Elf32_Shdr *shdr, const t_elf_parsed_hdr *parsed_hdr, t_
         link_val = uint32_t_LE_to_host_byte_order(link_val);
         flags    = uint32_t_LE_to_host_byte_order(flags);
         type     = uint32_t_LE_to_host_byte_order(type);
+        name     = uint32_t_LE_to_host_byte_order(name);
     }
 
     parsed_shdr->ent_size = (size_t)ent_size;
@@ -44,6 +47,7 @@ parse_elf_shdr_32(const Elf32_Shdr *shdr, const t_elf_parsed_hdr *parsed_hdr, t_
     parsed_shdr->flags    = (size_t)flags;
     parsed_shdr->type     = (size_t)type;
     parsed_shdr->offset   = (size_t)off;
+    parsed_shdr->name     = name;
 }
 
 static void
@@ -54,6 +58,7 @@ parse_elf_shdr_64(const Elf64_Shdr *shdr, const t_elf_parsed_hdr *parsed_hdr, t_
     uint64_t  link_val = shdr->sh_link;
     uint64_t  flags    = shdr->sh_flags;
     uint32_t  type     = shdr->sh_type;
+    uint32_t  name     = shdr->sh_name;
 
     if (parsed_hdr->ei_endianess == ELFDATA2MSB) {
         off      = uint64_t_BE_to_host_byte_order(off);
@@ -62,6 +67,7 @@ parse_elf_shdr_64(const Elf64_Shdr *shdr, const t_elf_parsed_hdr *parsed_hdr, t_
         link_val = uint64_t_BE_to_host_byte_order(link_val);
         flags    = uint64_t_BE_to_host_byte_order(flags);
         type     = uint32_t_BE_to_host_byte_order(type);
+        name     = uint32_t_BE_to_host_byte_order(name);
     } else if (parsed_hdr->ei_endianess == ELFDATA2LSB) {
         off      = uint64_t_LE_to_host_byte_order(off);
         ent_size = uint64_t_LE_to_host_byte_order(ent_size);
@@ -69,6 +75,7 @@ parse_elf_shdr_64(const Elf64_Shdr *shdr, const t_elf_parsed_hdr *parsed_hdr, t_
         link_val = uint64_t_LE_to_host_byte_order(link_val);
         flags    = uint64_t_LE_to_host_byte_order(flags);
         type     = uint32_t_LE_to_host_byte_order(type);
+        name     = uint32_t_LE_to_host_byte_order(name);
     }
 
     parsed_shdr->ent_size = ent_size;
@@ -77,6 +84,7 @@ parse_elf_shdr_64(const Elf64_Shdr *shdr, const t_elf_parsed_hdr *parsed_hdr, t_
     parsed_shdr->flags    = flags;
     parsed_shdr->type     = type;
     parsed_shdr->offset   = off;
+    parsed_shdr->name     = name;
 }
 
 /**

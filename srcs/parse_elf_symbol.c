@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 15:41:50 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/13 13:58:56 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/13 15:06:26 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,12 +36,13 @@ parse_elf_symbol_32(const Elf32_Sym *sym, const t_elf_parsed_hdr *parsed_hdr, t_
         shndx = uint16_t_LE_to_host_byte_order(shndx);
     }
 
-    parsed_symbol->value = (size_t)value;
-    parsed_symbol->size  = (size_t)size;
-    parsed_symbol->name  = name;
-    parsed_symbol->shndx = shndx;
-    parsed_symbol->info  = info;
-    parsed_symbol->other = other;
+    parsed_symbol->value      = (size_t)value;
+    parsed_symbol->size       = (size_t)size;
+    parsed_symbol->name       = name;
+    parsed_symbol->shndx      = shndx;
+    parsed_symbol->type       = ELF32_ST_TYPE(info);
+    parsed_symbol->bind       = ELF32_ST_BIND(info);
+    parsed_symbol->visibility = ELF32_ST_VISIBILITY(other);
 }
 
 static void
@@ -65,12 +66,13 @@ parse_elf_symbol_64(const Elf64_Sym *sym, const t_elf_parsed_hdr *parsed_hdr, t_
         shndx = uint16_t_LE_to_host_byte_order(shndx);
     }
 
-    parsed_symbol->value = (size_t)value;
-    parsed_symbol->size  = (size_t)size;
-    parsed_symbol->name  = name;
-    parsed_symbol->shndx = shndx;
-    parsed_symbol->info  = info;
-    parsed_symbol->other = other;
+    parsed_symbol->value      = (size_t)value;
+    parsed_symbol->size       = (size_t)size;
+    parsed_symbol->name       = name;
+    parsed_symbol->shndx      = shndx;
+    parsed_symbol->type       = ELF64_ST_TYPE(info);
+    parsed_symbol->bind       = ELF64_ST_BIND(info);
+    parsed_symbol->visibility = ELF64_ST_VISIBILITY(other);
 }
 
 t_elf_parsed_sym

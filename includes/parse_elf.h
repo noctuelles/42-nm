@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 14:16:31 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/13 13:47:16 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/13 15:05:12 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,12 +53,13 @@ typedef struct s_elf_parsed_hdr {
 } t_elf_parsed_hdr;
 
 typedef struct s_elf_parsed_shdr {
-    size_t offset;
-    size_t size;
-    size_t ent_size;
-    size_t link_val;
-    size_t flags;
-    size_t type;
+    size_t   offset;
+    size_t   size;
+    size_t   ent_size;
+    size_t   link_val;
+    size_t   flags;
+    size_t   type;
+    uint32_t name;
 } t_elf_parsed_shdr;
 
 typedef struct s_elf_parsed_sym {
@@ -66,8 +67,9 @@ typedef struct s_elf_parsed_sym {
     size_t   size;
     uint32_t name;
     uint16_t shndx;
-    uint8_t  info;
-    uint8_t  other;
+    uint8_t  type;
+    uint8_t  bind;
+    uint8_t  visibility;
 } t_elf_parsed_sym;
 
 #define SHN_RESERVED(shndx) ((shndx) >= SHN_LORESERVE && (shndx) < SHN_HIRESERVE)

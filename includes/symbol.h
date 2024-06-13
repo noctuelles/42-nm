@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 16:56:41 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/13 13:09:14 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/13 15:35:19 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,10 @@
 #include "parse_elf.h"
 
 typedef struct s_sym {
-    t_elf_parsed_sym  elf_sym;
-    t_elf_parsed_shdr elf_rel_shdr;
+    const char       *name;         /* symbol name */
+    char              c;            /* output letter */
+    t_elf_parsed_sym  elf_sym;      /* elf file values */
+    t_elf_parsed_shdr elf_rel_shdr; /* related section header */
 } t_sym;
 
 typedef struct s_syms_info {
@@ -31,6 +33,6 @@ typedef struct s_syms_info {
     t_list           *sym_list;
 } t_syms_info;
 
-t_list *new_symbol_elem();
+t_elf_parse_error resolve_syms_name(const t_file *file, t_syms_info *syms_info);
 
 #endif

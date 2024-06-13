@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 15:05:22 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/13 13:48:59 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/13 15:18:56 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ elf_parse_error_to_string(t_elf_parse_error error) {
     }
 }
 
-t_elf_parse_error
+static t_elf_parse_error
 iter_symtab(const t_file *file, const t_elf_parsed_hdr *hdr, t_syms_info *syms_info) {
     t_elf_parse_error ret_val  = ELF_PARSE_OK;
     t_sym            *sym      = NULL;
@@ -72,7 +72,7 @@ iter_symtab(const t_file *file, const t_elf_parsed_hdr *hdr, t_syms_info *syms_i
     size_t            n        = syms_info->shdr_symtab.ent_size;
 
     while (n < syms_info->shdr_symtab.size) {
-        sym = malloc(sizeof(*sym));
+        sym = ft_calloc(sizeof(*sym), 1);
         if (sym == NULL) {
             return (ELF_PARSE_INTERNAL_ERROR);
         }
@@ -97,7 +97,7 @@ iter_symtab(const t_file *file, const t_elf_parsed_hdr *hdr, t_syms_info *syms_i
     return (ret_val);
 }
 
-t_elf_parse_error
+static t_elf_parse_error
 iter_shdrs(const t_file *file, const t_elf_parsed_hdr *hdr, t_syms_info *syms_info) {
     const uint8_t    *shdr_ptr        = NULL;
     const uint8_t    *shdr_strtab_ptr = NULL;
@@ -151,7 +151,15 @@ parse_elf_symbols(const t_file *file) {
         goto err;
     }
     syms_info.ei_class = hdr.ei_class;
+    syms_info.shdr_shstrtab =
+        parse_elf_shdr(get_file_ptr_from_offset(file, hdr.shdr_tab_off + (hdr.shdr_tab_strndx * hdr.shdr_tab_ent_size)), &hdr);
+    if ((ret_val = check_elf_shdr_strtab(file, &syms_info.shdr_shstrtab)) != ELF_PARSE_OK) {
+        goto err;
+    }
     if ((ret_val = iter_shdrs(file, &hdr, &syms_info)) != ELF_PARSE_OK) {
+        goto err;
+    }
+    if ((ret_val = resolve_syms_name(file, &syms_info)) != ELF_PARSE_OK) {
         goto err;
     }
     return (NULL);
