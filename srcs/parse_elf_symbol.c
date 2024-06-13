@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 15:41:50 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/12 18:39:22 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/13 13:58:56 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,22 +86,12 @@ parse_elf_sym(const void *symbol, const t_elf_parsed_hdr *hdr) {
     return (parsed_symbol);
 }
 
-const char *
-get_sym_name(const t_file *file, const t_elf_parsed_sym *sym, const t_elf_parsed_shdr *strtab_shdr) {
-    return (get_file_ptr_from_offset(file, strtab_shdr->offset + sym->name));
-}
-
 t_elf_parse_error
-check_elf_sym(const t_file *file, const t_elf_parsed_sym *sym, const t_elf_parsed_shdr *strtab_shdr) {
-    const char *str = NULL;
-    size_t      i   = 0;
-
-    str = get_file_ptr_from_offset(file, strtab_shdr->offset + sym->name);
-    while (i < strtab_shdr->size) {
-        if (str[i] == '\0') {
-            return (ELF_PARSE_OK);
+check_elf_sym(const t_elf_parsed_sym *sym, const t_elf_parsed_hdr *hdr) {
+    if (!SHN_RESERVED(sym->shndx)) {
+        if (!(sym->shndx == SHN_UNDEF || sym->shndx < hdr->shdr_tab_ent_nbr)) {
+            return (ELF_PARSE_INVALID_SYMBOL_SHNDX);
         }
-        i++;
     }
-    return (ELF_PARSE_FILE_TOO_SHORT);
+    return (ELF_PARSE_OK);
 }
