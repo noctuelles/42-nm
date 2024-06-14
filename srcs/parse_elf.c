@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 15:05:22 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/13 15:18:56 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/14 11:24:33 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ iter_symtab(const t_file *file, const t_elf_parsed_hdr *hdr, t_syms_info *syms_i
         if (sym == NULL) {
             return (ELF_PARSE_INTERNAL_ERROR);
         }
+        sym->type    = '?';
         sym->elf_sym = parse_elf_sym(get_file_ptr_from_offset(file, syms_info->shdr_symtab.offset + n), hdr);
         if ((ret_val = check_elf_sym(&sym->elf_sym, hdr)) != ELF_PARSE_OK) {
             free(sym);
@@ -162,6 +163,7 @@ parse_elf_symbols(const t_file *file) {
     if ((ret_val = resolve_syms_name(file, &syms_info)) != ELF_PARSE_OK) {
         goto err;
     }
+    print_syms(&syms_info);
     return (NULL);
 err:
     if (syms_info.sym_list != NULL) {

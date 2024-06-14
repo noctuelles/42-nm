@@ -6,20 +6,21 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 15:17:15 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/07 12:28:23 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/14 11:11:53 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #define SWAP_UINT16(x) (((x) >> 8U) | ((x) << 8U))
 #define SWAP_UINT32(x) (((x) >> 24U) | (((x) >> 8U) & 0x0000FF00U) | (((x) << 8U) & 0x00FF0000U) | ((x) << 24U))
-#define SWAP_UINT64(x)                                                                            \
-    (((x) >> 56U) | (((x) >> 40U) & 0x000000000000FF00U) | (((x) >> 24U) & 0x0000000000FF0000U) | \
-     (((x) >> 8U) & 0x00000000FF000000U) | (((x) << 8U) & 0x000000FF00000000U) |                  \
-     (((x) << 24U) & 0x0000FF0000000000U) | (((x) << 40U) & 0x00FF000000000000U) | ((x) << 56U))
+#define SWAP_UINT64(x)                                                                                                                  \
+    (((x) >> 56U) | (((x) >> 40U) & 0x000000000000FF00U) | (((x) >> 24U) & 0x0000000000FF0000U) | (((x) >> 8U) & 0x00000000FF000000U) | \
+     (((x) << 8U) & 0x000000FF00000000U) | (((x) << 24U) & 0x0000FF0000000000U) | (((x) << 40U) & 0x00FF000000000000U) | ((x) << 56U))
 
 #include "conf.h"
+#include "libft.h"
 
 uint16_t
 uint16_t_BE_to_host_byte_order(uint16_t value) {
@@ -85,4 +86,9 @@ uint64_t_LE_to_host_byte_order(uint64_t value) {
 #else
 #error "Unsupported byte order"
 #endif
+}
+
+bool
+str_startswith(const char *start_str, const char *str) {
+    return (ft_strnstr(str, start_str, ft_strlen(start_str)) == str);
 }

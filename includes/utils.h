@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 16:49:18 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/06 17:00:56 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/14 11:12:13 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,15 @@
 
 #include <stdint.h>
 
+#define IS_SET(flags, mask) (((flags) & (mask)) == (mask))
+
 uint16_t uint16_t_BE_to_host_byte_order(uint16_t value);
 uint16_t uint16_t_LE_to_host_byte_order(uint16_t value);
 uint32_t uint32_t_BE_to_host_byte_order(uint32_t value);
 uint32_t uint32_t_LE_to_host_byte_order(uint32_t value);
 uint64_t uint64_t_BE_to_host_byte_order(uint64_t value);
 uint64_t uint64_t_LE_to_host_byte_order(uint64_t value);
+
+bool str_startswith(const char *start_str, const char *str);
 
 #endif
