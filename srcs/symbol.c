@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 15:06:57 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/15 07:42:05 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/17 12:50:22 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "ft_nm.h"
 #include "libft.h"
 #include "utils.h"
 
@@ -74,7 +75,7 @@ decode_sym_sec_type(const t_elf_parsed_shdr *sec, const char *sec_name) {
 }
 
 static char
-decode_sym_type(const t_sym *symbol) {
+decode_symbol_type(const t_sym *symbol) {
     char c = '\0';
 
     if (symbol->elf_sym.shndx == SHN_COMMON) {
@@ -128,28 +129,43 @@ decode_sym_type(const t_sym *symbol) {
 
 void
 print_syms(const t_syms_info *syms_info) {
-    t_list *elem = NULL;
-    t_sym  *sym  = NULL;
+    t_sym *sym  = NULL;
+    char   type = 0;
 
-    elem = syms_info->sym_list;
-    while (elem != NULL) {
-        sym = elem->content;
+    for (t_list *elem = syms_info->sym_list; elem != NULL; elem = elem->next) {
+        sym  = elem->content;
+        type = decode_symbol_type(sym);
+
+        if (g_opts.undefined_symbols_only && sym->elf_sym.shndx != SHN_UNDEF) {
+            continue;
+        }
+        if (g_opts.external_symbols_only && sym->elf_sym.bind != STB_GLOBAL) {
+            continue;
+        }
+        if (!g_opts.debug_symbols && (sym->elf_sym.type == STT_SECTION || sym->elf_sym.type == STT_FILE || type == 'N')) {
+            continue;
+        }
+
         if (syms_info->ei_class == ELFCLASS32) {
-            if (sym->elf_sym.size == 0) {
+            if (sym->elf_sym.shndx == SHN_UNDEF) {
                 printf("        ");
             } else {
                 printf("%08x", (uint32_t)sym->elf_sym.value);
             }
         } else if (syms_info->ei_class == ELFCLASS64) {
-            if (sym->elf_sym.size == 0) {
+            if (sym->elf_sym.shndx == SHN_UNDEF) {
                 printf("                ");
             } else {
                 printf("%016lx", (uint64_t)sym->elf_sym.value);
             }
         }
-        printf(" %c %s\n", decode_sym_type(sym), sym->name);
-        elem = elem->next;
+        printf(" %c %s\n", type, sym->name);
     }
+}
+
+void
+sort_syms(t_list **syms) {
+    (void)syms;
 }
 
 /**
