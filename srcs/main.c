@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 10:28:48 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/17 14:00:13 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/17 14:55:51 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ display_files_symbol(t_list *files) {
         if (curr_file == NULL) {
             continue;
         }
-        parse_elf_symbols(curr_file);
+        dump_elf_syms(curr_file);
 
         free_file(curr_file);
     }

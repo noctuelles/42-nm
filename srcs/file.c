@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 11:37:18 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/12 12:31:40 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/17 15:29:49 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,9 @@
 #include "libft.h"
 
 typedef struct s_file {
-    uint8_t *buf_start;
-    uint8_t *buf_end;
+    const char *pathname;
+    uint8_t    *buf_start;
+    uint8_t    *buf_end;
 } t_file;
 
 /**
@@ -69,7 +70,8 @@ load_file(const char *pathname) {
         ft_error(0, errno, "mmap");
         goto clean;
     }
-    file->buf_end = file->buf_start + st.st_size;
+    file->buf_end  = file->buf_start + st.st_size;
+    file->pathname = pathname;
     goto close_fd;
 clean:
     free(file);
@@ -123,6 +125,11 @@ get_file_size(const t_file *file) {
     return (file->buf_end - file->buf_start);
 }
 
+const char *
+get_file_name(const t_file *file) {
+    return (file->pathname);
+}
+
 /**
  * @brief Get the offset of a pointer in a file.
  *
@@ -140,4 +147,9 @@ get_file_ptr_from_offset(const t_file *file, size_t offset) {
     assert(file != NULL);
     assert(offset < get_file_size(file));
     return (file->buf_start + offset);
+}
+
+bool
+is_file_ptr_offset_valid(const t_file *file, size_t offset) {
+    return (offset < get_file_size(file));
 }

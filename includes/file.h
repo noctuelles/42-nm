@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 11:55:33 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/12 12:27:42 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/17 15:29:57 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
  * @file file.h  Abstraction for file handling.
  */
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -27,8 +28,10 @@ void    free_file(const t_file *file);
 
 const void *try_read_file(const t_file *file, size_t range_start, size_t range_end);
 size_t      get_file_size(const t_file *file);
+const char *get_file_name(const t_file *file);
 size_t      get_file_ptr_offset(const t_file *file, const void *ptr);
 
+bool        is_file_ptr_offset_valid(const t_file *file, size_t offset);
 const void *get_file_ptr_from_offset(const t_file *file, size_t offset);
 
 #endif

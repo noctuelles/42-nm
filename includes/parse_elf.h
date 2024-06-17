@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 14:16:31 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/13 15:05:12 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/17 14:55:51 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,6 @@ typedef struct s_elf_parsed_hdr {
     uint8_t  ei_endianess;
     uint8_t  ei_class;
     size_t   shdr_tab_off;
-    uint16_t shdr_tab_size;
     uint16_t shdr_tab_ent_size;
     uint16_t shdr_tab_ent_nbr;
     uint16_t shdr_tab_strndx;
@@ -84,6 +83,6 @@ t_elf_parse_error check_elf_shdr_strtab(const t_file *file, const t_elf_parsed_s
 t_elf_parsed_sym  parse_elf_sym(const void *symbol, const t_elf_parsed_hdr *hdr);
 t_elf_parse_error check_elf_sym(const t_elf_parsed_sym *sym, const t_elf_parsed_hdr *hdr);
 
-t_list *parse_elf_symbols(const t_file *file);
+t_list *dump_elf_syms(const t_file *file);
 
 #endif

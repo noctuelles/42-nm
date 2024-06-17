@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 15:05:22 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/17 14:33:45 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/17 15:30:48 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,32 +67,46 @@ elf_parse_error_to_string(t_elf_parse_error error) {
 }
 
 static t_elf_parse_error
-iter_symtab(const t_file *file, const t_elf_parsed_hdr *hdr, t_syms_info *syms_info) {
+resolve_sym_name(const t_file *file, const t_syms_info *syms_info, t_sym *sym) {
+    if (!SHN_RESERVED(sym->elf_sym.shndx)) {
+    }
+}
+
+static t_elf_parse_error
+fill_sym_list(const t_file *file, t_syms_info *syms_info) {
+    size_t            n        = syms_info->shdr_symtab.ent_size;
     t_elf_parse_error ret_val  = ELF_PARSE_OK;
     t_sym            *sym      = NULL;
     t_list           *sym_elem = NULL;
-    size_t            n        = syms_info->shdr_symtab.ent_size;
 
     while (n < syms_info->shdr_symtab.size) {
-        sym = ft_calloc(sizeof(*sym), 1);
-        if (sym == NULL) {
+        if ((sym = ft_calloc(sizeof(*sym), 1)) == NULL) {
             return (ELF_PARSE_INTERNAL_ERROR);
         }
-        sym->elf_sym = parse_elf_sym(get_file_ptr_from_offset(file, syms_info->shdr_symtab.offset + n), hdr);
-        if ((ret_val = check_elf_sym(&sym->elf_sym, hdr)) != ELF_PARSE_OK) {
+
+        sym->elf_sym = parse_elf_sym(get_file_ptr_from_offset(file, syms_info->shdr_symtab.offset + n), &syms_info->hdr);
+        if ((ret_val = check_elf_sym(&sym->elf_sym, &syms_info->hdr)) != ELF_PARSE_OK) {
             free(sym);
             return (ret_val);
         }
         if (!SHN_RESERVED(sym->elf_sym.shndx)) {
-            sym->elf_rel_shdr =
-                parse_elf_shdr(get_file_ptr_from_offset(file, hdr->shdr_tab_off + (sym->elf_sym.shndx * hdr->shdr_tab_ent_size)), hdr);
+            sym->elf_rel_shdr = parse_elf_shdr(
+                get_file_ptr_from_offset(file, syms_info->hdr.shdr_tab_off + (sym->elf_sym.shndx * syms_info->hdr.shdr_tab_ent_size)),
+                &syms_info->hdr);
         }
+
+        if ((ret_val = resolve_sym_name(file, syms_info, sym)) != ELF_PARSE_OK) {
+            free(sym);
+            return (ret_val);
+        }
+
         sym_elem = ft_lstnew(sym);
         if (sym_elem == NULL) {
             free(sym);
             return (ELF_PARSE_INTERNAL_ERROR);
         }
         ft_lstadd_back(&syms_info->sym_list, sym_elem);
+
         n += syms_info->shdr_symtab.ent_size;
     }
 
@@ -100,47 +114,48 @@ iter_symtab(const t_file *file, const t_elf_parsed_hdr *hdr, t_syms_info *syms_i
 }
 
 static t_elf_parse_error
-iter_shdrs(const t_file *file, const t_elf_parsed_hdr *hdr, t_syms_info *syms_info) {
+iter_shdrs(const t_file *file, t_syms_info *syms_info) {
+    t_elf_parse_error ret_val         = ELF_PARSE_OK;
     const uint8_t    *shdr_ptr        = NULL;
     const uint8_t    *shdr_strtab_ptr = NULL;
-    size_t            i               = 1;
-    t_elf_parse_error ret_val         = ELF_PARSE_OK;
+    size_t            i               = 0;
 
-    shdr_ptr = get_file_ptr_from_offset(file, hdr->shdr_tab_off);
-    while (i < hdr->shdr_tab_ent_nbr) {
+    while (i < syms_info->hdr.shdr_tab_ent_nbr) {
+        shdr_ptr = get_file_ptr_from_offset(file, syms_info->hdr.shdr_tab_off + (i * syms_info->hdr.shdr_tab_ent_size));
+
         if (((const Elf32_Shdr *)shdr_ptr)->sh_type == SHT_SYMTAB) {
-            syms_info->shdr_symtab = parse_elf_shdr(shdr_ptr, hdr);
-            if ((ret_val = check_elf_shdr_symtab(file, &syms_info->shdr_symtab, hdr)) != ELF_PARSE_OK) {
+            syms_info->shdr_symtab = parse_elf_shdr(shdr_ptr, &syms_info->hdr);
+            if ((ret_val = check_elf_shdr_symtab(file, &syms_info->shdr_symtab, &syms_info->hdr)) != ELF_PARSE_OK) {
                 return (ret_val);
             }
-            shdr_strtab_ptr =
-                get_file_ptr_from_offset(file, hdr->shdr_tab_off + (syms_info->shdr_symtab.link_val * hdr->shdr_tab_ent_size));
-            syms_info->shdr_strtab = parse_elf_shdr(shdr_strtab_ptr, hdr);
+            shdr_strtab_ptr = get_file_ptr_from_offset(
+                file, syms_info->hdr.shdr_tab_off + (syms_info->shdr_symtab.link_val * syms_info->hdr.shdr_tab_ent_size));
+            syms_info->shdr_strtab = parse_elf_shdr(shdr_strtab_ptr, &syms_info->hdr);
             if ((ret_val = check_elf_shdr_strtab(file, &syms_info->shdr_strtab)) != ELF_PARSE_OK) {
                 return (ret_val);
             }
-            if ((ret_val = iter_symtab(file, hdr, syms_info)) != ELF_PARSE_OK) {
+
+            if ((ret_val = fill_sym_list(file, syms_info)) != ELF_PARSE_OK) {
+                ft_lstclear(&syms_info->sym_list, NULL);
                 return (ret_val);
             }
+
+            if (!g_opts.no_sort) {
+                ft_lstsort(&syms_info->sym_list, g_opts.reverse_sort ? sort_sym_rev : sort_sym);
+            }
+            print_syms(syms_info);
+            ft_lstclear(&syms_info->sym_list, NULL);
         }
-        shdr_ptr += hdr->shdr_tab_ent_size;
         i++;
     }
     return (ret_val);
 }
 
-/**
- * @brief Parse the symbols of an ELF file.
- *
- * @param file File to parse.
- * @return t_list* List of symbols, in the order where they appear in the list (unsorted by any means).
- */
-t_list *
-parse_elf_symbols(const t_file *file) {
-    const void       *elf_hdr   = NULL;
-    t_syms_info       syms_info = {0};
-    t_elf_parsed_hdr  hdr       = {0};
-    t_elf_parse_error ret_val   = ELF_PARSE_FILE_TOO_SHORT;
+void
+dump_elf_syms(const t_file *file) {
+    const void       *elf_hdr = NULL;
+    t_elf_parse_error ret_val = ELF_PARSE_FILE_TOO_SHORT;
+    t_syms_info       syms_info;
 
     errno = 0;
     if ((elf_hdr = try_read_file(file, 0, sizeof(Elf64_Ehdr))) == NULL) {
@@ -148,31 +163,21 @@ parse_elf_symbols(const t_file *file) {
             goto err;
         }
     }
-    hdr = parse_elf_hdr(elf_hdr);
-    if ((ret_val = check_elf_hdr(file, &hdr)) != ELF_PARSE_OK) {
+    syms_info.hdr = parse_elf_hdr(elf_hdr);
+    if ((ret_val = check_elf_hdr(file, &syms_info.hdr)) != ELF_PARSE_OK) {
         goto err;
     }
-    syms_info.ei_class = hdr.ei_class;
     syms_info.shdr_shstrtab =
-        parse_elf_shdr(get_file_ptr_from_offset(file, hdr.shdr_tab_off + (hdr.shdr_tab_strndx * hdr.shdr_tab_ent_size)), &hdr);
+        parse_elf_shdr(get_file_ptr_from_offset(file, syms_info.hdr.shdr_tab_off + (hdr.shdr_tab_strndx * hdr.shdr_tab_ent_size)), &hdr);
     if ((ret_val = check_elf_shdr_strtab(file, &syms_info.shdr_shstrtab)) != ELF_PARSE_OK) {
         goto err;
     }
-    if ((ret_val = iter_shdrs(file, &hdr, &syms_info)) != ELF_PARSE_OK) {
+
+    if ((ret_val = iter_shdrs(file, &syms_info)) != ELF_PARSE_OK) {
         goto err;
     }
-    if ((ret_val = resolve_names(file, &syms_info)) != ELF_PARSE_OK) {
-        goto err;
-    }
-    if (!g_opts.no_sort) {
-        ft_lstsort(&syms_info.sym_list, g_opts.reverse_sort ? sort_sym_rev : sort_sym);
-    }
-    print_syms(&syms_info);
-    return (NULL);
+    return;
+
 err:
-    if (syms_info.sym_list != NULL) {
-        ft_lstclear(&syms_info.sym_list, NULL);
-    }
-    ft_error(0, errno, elf_parse_error_to_string(ret_val));
-    return (NULL);
+    return (ft_error(0, errno, "%s: %s", get_file_name(file), elf_parse_error_to_string(ret_val)));
 }

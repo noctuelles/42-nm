@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 16:56:41 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/17 14:33:11 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/17 15:06:14 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,11 @@ typedef struct s_sym {
 } t_sym;
 
 typedef struct s_syms_info {
-    uint8_t           ei_class;
-    t_elf_parsed_shdr shdr_symtab;
-    t_elf_parsed_shdr shdr_strtab;
-    t_elf_parsed_shdr shdr_shstrtab;
-    t_list           *sym_list;
+    t_elf_parsed_hdr  hdr;           /* ELF header */
+    t_elf_parsed_shdr shdr_symtab;   /* Section header of the symbol table */
+    t_elf_parsed_shdr shdr_strtab;   /* Section header of the string table */
+    t_elf_parsed_shdr shdr_shstrtab; /* Section header of the section header string table */
+    t_list           *sym_list;      /* List of symbols */
 } t_syms_info;
 
 t_elf_parse_error resolve_names(const t_file *file, t_syms_info *syms_info);
