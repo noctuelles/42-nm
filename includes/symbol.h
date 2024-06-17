@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 16:56:41 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/17 12:36:18 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/17 14:33:11 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,5 +36,8 @@ typedef struct s_syms_info {
 t_elf_parse_error resolve_names(const t_file *file, t_syms_info *syms_info);
 
 void print_syms(const t_syms_info *syms_info);
+
+int sort_sym(const void *a, const void *b);
+int sort_sym_rev(const void *a, const void *b);
 
 #endif

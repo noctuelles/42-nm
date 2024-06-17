@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 15:06:57 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/17 12:50:22 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/17 14:33:11 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,9 +163,20 @@ print_syms(const t_syms_info *syms_info) {
     }
 }
 
-void
-sort_syms(t_list **syms) {
-    (void)syms;
+int
+sort_sym(const void *a, const void *b) {
+    const t_sym *sym_a = a;
+    const t_sym *sym_b = b;
+
+    return (ft_strcmp(sym_a->name, sym_b->name));
+}
+
+int
+sort_sym_rev(const void *a, const void *b) {
+    const t_sym *sym_a = a;
+    const t_sym *sym_b = b;
+
+    return (ft_strcmp(sym_b->name, sym_a->name));
 }
 
 /**

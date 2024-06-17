@@ -6,7 +6,7 @@
 #    By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/05 11:17:26 by plouvel           #+#    #+#              #
-#    Updated: 2024/06/11 19:49:38 by plouvel          ###   ########.fr        #
+#    Updated: 2024/06/17 12:32:21 by plouvel          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,7 +37,6 @@ SRCS=main.c \
 	 parse_elf.c \
 	 parsing_opts.c \
 	 symbol.c \
-	 ft_nm.c \
 	 utils.c \
 	 file.c
 

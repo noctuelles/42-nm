@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 15:05:22 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/17 12:19:21 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/17 14:33:45 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,10 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "file.h"
+#include "ft_nm.h"
 #include "libft.h"
 #include "symbol.h"
 #include "utils.h"
@@ -161,6 +163,9 @@ parse_elf_symbols(const t_file *file) {
     }
     if ((ret_val = resolve_names(file, &syms_info)) != ELF_PARSE_OK) {
         goto err;
+    }
+    if (!g_opts.no_sort) {
+        ft_lstsort(&syms_info.sym_list, g_opts.reverse_sort ? sort_sym_rev : sort_sym);
     }
     print_syms(&syms_info);
     return (NULL);
