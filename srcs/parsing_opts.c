@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   opts.c                                             :+:      :+:    :+:   */
+/*   parsing_opts.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 10:31:32 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/05 12:13:00 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/17 12:26:12 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,10 @@ int
 parse_debug_symbols(const char *arg, t_args_parser_state *state, void *input) {
     (void)arg;
     (void)state;
-    t_ft_nm *ft_nm = (t_ft_nm *)input;
+    (void)input;
 
-    ft_nm->opts.debug_symbols = true;
+    g_opts.debug_symbols = true;
+
     return (0);
 }
 
@@ -31,9 +32,10 @@ int
 parse_external_symbols_only(const char *arg, t_args_parser_state *state, void *input) {
     (void)arg;
     (void)state;
-    t_ft_nm *ft_nm = (t_ft_nm *)input;
+    (void)input;
 
-    ft_nm->opts.external_symbols_only = true;
+    g_opts.external_symbols_only = true;
+
     return (0);
 }
 
@@ -41,9 +43,10 @@ int
 parse_undefined_symbols_only(const char *arg, t_args_parser_state *state, void *input) {
     (void)arg;
     (void)state;
-    t_ft_nm *ft_nm = (t_ft_nm *)input;
+    (void)input;
 
-    ft_nm->opts.undefined_symbols_only = true;
+    g_opts.undefined_symbols_only = true;
+
     return (0);
 }
 
@@ -51,9 +54,10 @@ int
 parse_reverse_sort(const char *arg, t_args_parser_state *state, void *input) {
     (void)arg;
     (void)state;
-    t_ft_nm *ft_nm = (t_ft_nm *)input;
+    (void)input;
 
-    ft_nm->opts.reverse_sort = true;
+    g_opts.reverse_sort = true;
+
     return (0);
 }
 
@@ -61,9 +65,10 @@ int
 parse_no_sort(const char *arg, t_args_parser_state *state, void *input) {
     (void)arg;
     (void)state;
-    t_ft_nm *ft_nm = (t_ft_nm *)input;
+    (void)input;
 
-    ft_nm->opts.no_sort = true;
+    g_opts.no_sort = true;
+
     return (0);
 }
 
@@ -71,9 +76,10 @@ int
 parse_help(const char *arg, t_args_parser_state *state, void *input) {
     (void)arg;
     (void)state;
-    t_ft_nm *ft_nm = (t_ft_nm *)input;
+    (void)input;
 
-    ft_nm->opts.display_help = true;
+    g_opts.display_help = true;
+
     return (0);
 }
 
@@ -81,7 +87,7 @@ int
 parse_argument(const char *arg, t_args_parser_state *state, void *input) {
     (void)state;
 
-    t_ft_nm *ft_nm = (t_ft_nm *)input;
+    t_list **files = input;
     t_list  *elem  = NULL;
 
     elem = ft_lstnew((char *)arg);
@@ -90,6 +96,6 @@ parse_argument(const char *arg, t_args_parser_state *state, void *input) {
         return (1);
     }
     elem->content = (char *)arg;
-    ft_lstadd_back(&ft_nm->files, elem);
+    ft_lstadd_back(files, elem);
     return (0);
 }

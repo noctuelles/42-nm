@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 15:06:57 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/14 14:24:03 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/15 07:42:05 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,9 @@ decode_sym_type(const t_sym *symbol) {
             return ('U');
         }
     }
+    if (symbol->elf_rel_shdr.type == STT_GNU_IFUNC) {
+        return ('i');
+    }
     if (IS_SET(symbol->elf_sym.bind, STB_WEAK)) {
         if (IS_SET(symbol->elf_sym.type, STT_OBJECT)) {
             /* The symbol is a weak object, with a default value specified. */
@@ -103,6 +106,9 @@ decode_sym_type(const t_sym *symbol) {
             /* The symbol is a weak symbol, with a default value specified. */
             return ('W');
         }
+    }
+    if (IS_SET(symbol->elf_sym.bind, STB_GNU_UNIQUE)) {
+        return ('u');
     }
     if (!(IS_SET(symbol->elf_sym.bind, STB_GLOBAL) || IS_SET(symbol->elf_sym.bind, STB_LOCAL))) {
         /* If the symbol binding is not global or local, this is some processor specific semantics, since we've already checked that the
@@ -129,13 +135,13 @@ print_syms(const t_syms_info *syms_info) {
     while (elem != NULL) {
         sym = elem->content;
         if (syms_info->ei_class == ELFCLASS32) {
-            if (sym->elf_sym.shndx == SHN_UNDEF) {
+            if (sym->elf_sym.size == 0) {
                 printf("        ");
             } else {
                 printf("%08x", (uint32_t)sym->elf_sym.value);
             }
         } else if (syms_info->ei_class == ELFCLASS64) {
-            if (sym->elf_sym.shndx == SHN_UNDEF) {
+            if (sym->elf_sym.size == 0) {
                 printf("                ");
             } else {
                 printf("%016lx", (uint64_t)sym->elf_sym.value);

@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 10:36:54 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/06 16:15:59 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/17 12:24:14 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,6 @@ typedef struct s_opts {
     bool display_help : 1;
 } t_opts;
 
-typedef struct s_ft_nm {
-    t_list *files;
-    t_opts  opts;
-} t_ft_nm;
-
-void free_ft_nm(t_ft_nm *ft_nm);
+extern t_opts g_opts;
 
 #endif
