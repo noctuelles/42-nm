@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 10:28:48 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/17 14:55:51 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/18 12:18:04 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ t_opts g_opts = {
     .reverse_sort           = false,
     .no_sort                = false,
     .display_help           = false,
+    .multiple_files         = false,
 };
 
 static int
@@ -88,32 +89,38 @@ display_help(const t_args_parser_config *config) {
     return (0);
 }
 
-static void
+static int
 display_files_symbol(t_list *files) {
-    const char *pathname  = NULL;
-    t_file     *curr_file = NULL;
+    t_file *curr_file = NULL;
+    int     ret_val   = 0;
 
     for (t_list *elem = files; elem != NULL; elem = elem->next) {
-        pathname  = elem->content;
-        curr_file = load_file(pathname);
+        curr_file = load_file(elem->content);
         if (curr_file == NULL) {
             continue;
         }
-        dump_elf_syms(curr_file);
+        if (g_opts.multiple_files && elem != files) {
+            printf("\n%s:\n", get_file_name(curr_file));
+        }
+        if (dump_elf_syms(curr_file) != 0) {
+            ret_val = 1;
+        }
 
         free_file(curr_file);
     }
+    return (ret_val);
 }
 
 int
 main(int argc, char **argv) {
-    t_list              *files  = NULL;
-    t_args_parser_config config = {.argv                      = argv,
-                                   .argc                      = argc,
-                                   .entries                   = g_option_entries,
-                                   .entries_nbr               = sizeof(g_option_entries) / sizeof(g_option_entries[0]),
-                                   .default_argument_parse_fn = parse_argument,
-                                   .input                     = &files};
+    t_list              *files   = NULL;
+    t_args_parser_config config  = {.argv                      = argv,
+                                    .argc                      = argc,
+                                    .entries                   = g_option_entries,
+                                    .entries_nbr               = sizeof(g_option_entries) / sizeof(g_option_entries[0]),
+                                    .default_argument_parse_fn = parse_argument,
+                                    .input                     = &files};
+    int                  ret_val = 0;
 
     if (ft_args_parser(&config) != 0) {
         return (1);
@@ -124,7 +131,7 @@ main(int argc, char **argv) {
     if (files == NULL) {
         ft_lstadd_back(&files, ft_lstnew(DEFAULT_FILE_STR));
     }
-    display_files_symbol(files);
+    ret_val = display_files_symbol(files);
     ft_lstclear(&files, NULL);
-    return (0);
+    return (ret_val);
 }

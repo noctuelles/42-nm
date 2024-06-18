@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 14:16:31 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/18 11:56:22 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/18 12:16:57 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,6 @@ t_elf_parse_error check_elf_sym(const t_elf_parsed_sym *sym, const t_elf_parsed_
 
 t_elf_parse_error check_elf_name(const t_file *file, const t_elf_parsed_shdr *strtab, uint32_t name);
 
-void dump_elf_syms(const t_file *file);
+int dump_elf_syms(const t_file *file);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 15:06:57 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/17 20:34:24 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/18 12:11:09 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,26 +19,6 @@
 #include "ft_nm.h"
 #include "libft.h"
 #include "utils.h"
-
-/**
- * @brief  Check if the symbol name is correctly terminated.
- *
- * @param strtab String table section header containing the symbol name.
- * @param ptr Pointer to the symbol name.
- * @return t_elf_parse_error ELF_PARSE_OK if the symbol name is correctly, otherwise ELF_PARSE_CORRUPT_STRTABLE.
- */
-static t_elf_parse_error
-check_strtab_ptr(const t_elf_parsed_shdr *strtab, const char *ptr) {
-    size_t i = 0;
-
-    while (i < strtab->size) {
-        if (ptr[i] == '\0') {
-            return (ELF_PARSE_OK);
-        }
-        i++;
-    }
-    return (ELF_PARSE_CORRUPT_STRTABLE);
-}
 
 static char
 decode_sym_sec_type(const t_elf_parsed_shdr *sec, const char *sec_name) {
@@ -177,38 +157,4 @@ sort_sym_rev(const void *a, const void *b) {
     const t_sym *sym_b = b;
 
     return (ft_strcmp(sym_b->name, sym_a->name));
-}
-
-/**
- * @brief Resolve the names of the symbols : that is, get the name of the section the symbol is related to, and the name of the symbol
- * itself.
- *
- * @param file File to parse.
- * @param syms_info Symbols information.
- * @return t_elf_parse_error ELF_PARSE_OK if the names are correctly resolved, otherwise an error code.
- */
-t_elf_parse_error
-resolve_names(const t_file *file, t_syms_info *syms_info) {
-    t_elf_parse_error ret_val = ELF_PARSE_OK;
-    t_list           *elem    = NULL;
-    t_sym            *sym     = NULL;
-
-    elem = syms_info->sym_list;
-    while (elem != NULL) {
-        sym               = elem->content;
-        sym->rel_sec_name = get_file_ptr_from_offset(file, syms_info->shdr_shstrtab.offset + sym->elf_rel_shdr.name);
-        if ((ret_val = check_strtab_ptr(&syms_info->shdr_shstrtab, sym->rel_sec_name)) != ELF_PARSE_OK) {
-            return (ret_val);
-        }
-        if (sym->elf_sym.type == STT_SECTION) {
-            sym->name = sym->rel_sec_name;
-        } else {
-            sym->name = get_file_ptr_from_offset(file, syms_info->shdr_strtab.offset + sym->elf_sym.name);
-            if ((ret_val = check_strtab_ptr(&syms_info->shdr_strtab, sym->name)) != ELF_PARSE_OK) {
-                return (ret_val);
-            }
-        }
-        elem = elem->next;
-    }
-    return (ret_val);
 }

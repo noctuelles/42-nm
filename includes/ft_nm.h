@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 10:36:54 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/17 14:00:29 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/18 12:12:44 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ typedef struct s_opts {
     bool reverse_sort : 1;
     bool no_sort : 1;
     bool display_help : 1;
+    bool multiple_files : 1;
 } t_opts;
 
 extern t_opts g_opts;

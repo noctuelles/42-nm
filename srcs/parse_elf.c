@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 15:05:22 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/18 12:05:44 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/18 12:16:46 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@
  * @return const char* Human-readable string.
  */
 static const char *
-elf_parse_error_to_string(t_elf_parse_error error) {
+elf_parse_err_to_str(t_elf_parse_error error) {
     switch (error) {
         case ELF_PARSE_OK:
             return ("sucess");
@@ -174,7 +174,7 @@ iter_shdrs(const t_file *file, t_syms_info *syms_info) {
     return (ret_val);
 }
 
-void
+int
 dump_elf_syms(const t_file *file) {
     const void       *elf_hdr = NULL;
     t_elf_parse_error ret_val = ELF_PARSE_FILE_TOO_SHORT;
@@ -200,8 +200,8 @@ dump_elf_syms(const t_file *file) {
     if ((ret_val = iter_shdrs(file, &syms_info)) != ELF_PARSE_OK) {
         goto err;
     }
-    return;
-
+    return (0);
 err:
-    ft_error(0, errno, "%s: %s", get_file_name(file), elf_parse_error_to_string(ret_val));
+    ft_error(0, errno, "%s: %s", get_file_name(file), elf_parse_err_to_str(ret_val));
+    return (1);
 }
