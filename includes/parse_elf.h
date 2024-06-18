@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 14:16:31 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/17 14:55:51 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/18 11:56:22 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,20 @@ typedef enum e_elf_parse_error {
     ELF_PARSE_INVALID_HDR_SHDR_ENTRY_NBR,
     ELF_PARSE_INVALID_HDR_SHDR_STRNDX,
     ELF_PARSE_INVALID_HDR_SHDRS,
+
+    /* Symbol table */
+    ELF_PARSE_INVALID_SYMTAB_ENTRY_SIZE,
+    ELF_PARSE_INVALID_SYMTAB_SIZE,
+    ELF_PARSE_INVALID_SYMTAB_STRTAB,
+    ELF_PARSE_INVALID_SYMTAB_MAPPED_REGION,
+
+    /* String table */
+
+    ELF_PARSE_INVALID_STRTAB_TYPE,
+    ELF_PARSE_INVALID_STRTAB_MAPPED_REGION,
+
+    /* All table */
+    ELF_PARSE_INVALID_SHDR_NAME,
 
     ELF_PARSE_CORRUPT_STRTABLE,
 
@@ -72,6 +86,7 @@ typedef struct s_elf_parsed_sym {
 } t_elf_parsed_sym;
 
 #define SHN_RESERVED(shndx) ((shndx) >= SHN_LORESERVE && (shndx) < SHN_HIRESERVE)
+#define CHK_PARSE(ret_val, expr) (((ret_val) = (expr)) == ELF_PARSE_OK)
 
 t_elf_parsed_hdr  parse_elf_hdr(const void *elf_hdr);
 t_elf_parse_error check_elf_hdr(const t_file *file, const t_elf_parsed_hdr *hdr);
@@ -83,6 +98,8 @@ t_elf_parse_error check_elf_shdr_strtab(const t_file *file, const t_elf_parsed_s
 t_elf_parsed_sym  parse_elf_sym(const void *symbol, const t_elf_parsed_hdr *hdr);
 t_elf_parse_error check_elf_sym(const t_elf_parsed_sym *sym, const t_elf_parsed_hdr *hdr);
 
-t_list *dump_elf_syms(const t_file *file);
+t_elf_parse_error check_elf_name(const t_file *file, const t_elf_parsed_shdr *strtab, uint32_t name);
+
+void dump_elf_syms(const t_file *file);
 
 #endif

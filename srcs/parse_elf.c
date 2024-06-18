@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 15:05:22 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/17 15:30:48 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/18 12:05:44 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,18 +57,30 @@ elf_parse_error_to_string(t_elf_parse_error error) {
             return ("invalid elf header section headers (wrong size or wrong offset)");
         case ELF_PARSE_INVALID_HDR_SHDR_STRNDX:
             return ("invalid elf header section header string table index");
+            /* Symtab Section Header */
+        case ELF_PARSE_INVALID_SYMTAB_ENTRY_SIZE:
+            return ("invalid symbol table entry size");
+        case ELF_PARSE_INVALID_SYMTAB_SIZE:
+            return ("invalid symbol table size");
+        case ELF_PARSE_INVALID_SYMTAB_STRTAB:
+            return ("invalid symbol table string table index");
+        case ELF_PARSE_INVALID_SYMTAB_MAPPED_REGION:
+            return ("invalid symbol table offset or size");
+            /* Strtab Sectio Header */
+        case ELF_PARSE_INVALID_STRTAB_TYPE:
+            return ("invalid string table type");
+        case ELF_PARSE_INVALID_STRTAB_MAPPED_REGION:
+            return ("invalid string table offset or size");
+            /* All Section Header*/
+        case ELF_PARSE_INVALID_SHDR_NAME:
+            return ("invalid section header name");
+            /* Other */
         case ELF_PARSE_CORRUPT_STRTABLE:
             return ("corrupted string table");
         case ELF_PARSE_INTERNAL_ERROR:
             return ("internal error");
         default:
             return ("unknown error");
-    }
-}
-
-static t_elf_parse_error
-resolve_sym_name(const t_file *file, const t_syms_info *syms_info, t_sym *sym) {
-    if (!SHN_RESERVED(sym->elf_sym.shndx)) {
     }
 }
 
@@ -89,15 +101,26 @@ fill_sym_list(const t_file *file, t_syms_info *syms_info) {
             free(sym);
             return (ret_val);
         }
+
+        /* Resolve related section name, and symbol name */
         if (!SHN_RESERVED(sym->elf_sym.shndx)) {
             sym->elf_rel_shdr = parse_elf_shdr(
                 get_file_ptr_from_offset(file, syms_info->hdr.shdr_tab_off + (sym->elf_sym.shndx * syms_info->hdr.shdr_tab_ent_size)),
                 &syms_info->hdr);
+            if ((ret_val = check_elf_name(file, &syms_info->shdr_shstrtab, sym->elf_rel_shdr.name)) != ELF_PARSE_OK) {
+                free(sym);
+                return (ret_val);
+            }
+            sym->rel_sec_name = get_file_ptr_from_offset(file, syms_info->shdr_shstrtab.offset + sym->elf_rel_shdr.name);
         }
-
-        if ((ret_val = resolve_sym_name(file, syms_info, sym)) != ELF_PARSE_OK) {
-            free(sym);
-            return (ret_val);
+        if (sym->elf_sym.type == STT_SECTION) {
+            sym->name = sym->rel_sec_name;
+        } else {
+            if ((ret_val = check_elf_name(file, &syms_info->shdr_strtab, sym->elf_rel_shdr.name)) != ELF_PARSE_OK) {
+                free(sym);
+                return (ret_val);
+            }
+            sym->name = get_file_ptr_from_offset(file, syms_info->shdr_strtab.offset + sym->elf_sym.name);
         }
 
         sym_elem = ft_lstnew(sym);
@@ -167,8 +190,9 @@ dump_elf_syms(const t_file *file) {
     if ((ret_val = check_elf_hdr(file, &syms_info.hdr)) != ELF_PARSE_OK) {
         goto err;
     }
-    syms_info.shdr_shstrtab =
-        parse_elf_shdr(get_file_ptr_from_offset(file, syms_info.hdr.shdr_tab_off + (hdr.shdr_tab_strndx * hdr.shdr_tab_ent_size)), &hdr);
+    syms_info.shdr_shstrtab = parse_elf_shdr(
+        get_file_ptr_from_offset(file, syms_info.hdr.shdr_tab_off + (syms_info.hdr.shdr_tab_strndx * syms_info.hdr.shdr_tab_ent_size)),
+        &syms_info.hdr);
     if ((ret_val = check_elf_shdr_strtab(file, &syms_info.shdr_shstrtab)) != ELF_PARSE_OK) {
         goto err;
     }
@@ -179,5 +203,5 @@ dump_elf_syms(const t_file *file) {
     return;
 
 err:
-    return (ft_error(0, errno, "%s: %s", get_file_name(file), elf_parse_error_to_string(ret_val)));
+    ft_error(0, errno, "%s: %s", get_file_name(file), elf_parse_error_to_string(ret_val));
 }

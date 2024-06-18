@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 15:41:50 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/17 15:25:51 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/18 11:45:44 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,6 @@ check_elf_sym(const t_elf_parsed_sym *sym, const t_elf_parsed_hdr *hdr) {
         if (!(sym->shndx == SHN_UNDEF || sym->shndx < hdr->shdr_tab_ent_nbr)) {
             return (ELF_PARSE_INVALID_SYMBOL_SHNDX);
         }
-    } else {
     }
     return (ELF_PARSE_OK);
 }

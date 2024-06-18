@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 15:43:54 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/17 14:54:12 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/18 11:51:24 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,16 +117,16 @@ check_elf_shdr_symtab(const t_file *file, const t_elf_parsed_shdr *shdr, const t
         min_symtab_ent_size = sizeof(Elf64_Sym);
     }
     if (shdr->ent_size < min_symtab_ent_size) {
-        return (ELF_PARSE_UNRECOGNIZED_FORMAT);
+        return (ELF_PARSE_INVALID_SYMTAB_ENTRY_SIZE);
     }
     if (shdr->size % shdr->ent_size != 0) {
-        return (ELF_PARSE_UNRECOGNIZED_FORMAT);
+        return (ELF_PARSE_INVALID_SYMTAB_SIZE);
     }
-    if (!(shdr->link_val > 0 && shdr->link_val < hdr->shdr_tab_ent_nbr)) {
-        return (ELF_PARSE_UNRECOGNIZED_FORMAT);
+    if (!(shdr->link_val > SHN_UNDEF && shdr->link_val < hdr->shdr_tab_ent_nbr)) {
+        return (ELF_PARSE_INVALID_SYMTAB_STRTAB);
     }
     if (try_read_file(file, shdr->offset, shdr->offset + shdr->size) == NULL) {
-        return (ELF_PARSE_FILE_TOO_SHORT);
+        return (ELF_PARSE_INVALID_SYMTAB_MAPPED_REGION);
     }
     return (ELF_PARSE_OK);
 }
@@ -134,10 +134,10 @@ check_elf_shdr_symtab(const t_file *file, const t_elf_parsed_shdr *shdr, const t
 t_elf_parse_error
 check_elf_shdr_strtab(const t_file *file, const t_elf_parsed_shdr *shdr) {
     if (shdr->type != SHT_STRTAB) {
-        return (ELF_PARSE_UNRECOGNIZED_FORMAT);
+        return (ELF_PARSE_INVALID_STRTAB_TYPE);
     }
     if (try_read_file(file, shdr->offset, shdr->offset + shdr->size) == NULL) {
-        return (ELF_PARSE_FILE_TOO_SHORT);
+        return (ELF_PARSE_INVALID_STRTAB_MAPPED_REGION);
     }
     return (ELF_PARSE_OK);
 }

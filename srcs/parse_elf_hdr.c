@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 15:48:04 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/17 14:53:17 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/18 10:45:25 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ check_elf_hdr(const t_file *file, const t_elf_parsed_hdr *hdr) {
         return (ELF_PARSE_INVALID_HDR_SHDR_ENTRY_NBR);
     }
     if (hdr->shdr_tab_ent_size < shdr_ent_min_size) {
-        return (ELF_PARSE_INVALID_HDR_SHDR_ENTRY_NBR);
+        return (ELF_PARSE_INVALID_HDR_SHDR_ENTRY_SIZE);
     }
     if (try_read_file(file, hdr->shdr_tab_off, hdr->shdr_tab_off + (hdr->shdr_tab_ent_size * hdr->shdr_tab_ent_nbr)) == NULL) {
         return (ELF_PARSE_INVALID_HDR_SHDRS);
@@ -110,6 +110,5 @@ check_elf_hdr(const t_file *file, const t_elf_parsed_hdr *hdr) {
     if (!(hdr->shdr_tab_strndx > SHN_UNDEF && hdr->shdr_tab_strndx < hdr->shdr_tab_ent_nbr)) {
         return (ELF_PARSE_INVALID_HDR_SHDR_STRNDX);
     }
-
     return (ELF_PARSE_OK);
 }
