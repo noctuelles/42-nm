@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 15:05:22 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/18 12:16:46 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/18 12:22:23 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,7 +159,7 @@ iter_shdrs(const t_file *file, t_syms_info *syms_info) {
             }
 
             if ((ret_val = fill_sym_list(file, syms_info)) != ELF_PARSE_OK) {
-                ft_lstclear(&syms_info->sym_list, NULL);
+                ft_lstclear(&syms_info->sym_list, free);
                 return (ret_val);
             }
 
@@ -167,7 +167,7 @@ iter_shdrs(const t_file *file, t_syms_info *syms_info) {
                 ft_lstsort(&syms_info->sym_list, g_opts.reverse_sort ? sort_sym_rev : sort_sym);
             }
             print_syms(syms_info);
-            ft_lstclear(&syms_info->sym_list, NULL);
+            ft_lstclear(&syms_info->sym_list, free);
         }
         i++;
     }

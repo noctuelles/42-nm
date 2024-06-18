@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 11:37:18 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/17 15:29:49 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/18 12:19:51 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ ret:
  * @param file The file to free.
  */
 void
-free_file(const t_file *file) {
+release_file(const t_file *file) {
     if (file != NULL) {
         (void)munmap(file->buf_start, file->buf_end - file->buf_start);
         free((t_file *)file);
