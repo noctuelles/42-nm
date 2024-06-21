@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 14:16:31 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/18 12:16:57 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/21 17:04:01 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,6 @@
 
 typedef enum e_elf_parse_error {
     ELF_PARSE_OK,
-    ELF_PARSE_FILE_TOO_SHORT,
-    ELF_PARSE_NO_SHDR_TABLE,
-    ELF_PARSE_UNRECOGNIZED_FORMAT,
 
     /* Symbol related errors */
     ELF_PARSE_INVALID_SYMBOL_SHNDX,
@@ -47,11 +44,8 @@ typedef enum e_elf_parse_error {
     ELF_PARSE_INVALID_STRTAB_MAPPED_REGION,
 
     /* All table */
-    ELF_PARSE_INVALID_SHDR_NAME,
-
-    ELF_PARSE_CORRUPT_STRTABLE,
-
-    ELF_PARSE_CORRUPT_FILE,
+    ELF_PARSE_INVALID_NAME,
+    ELF_PARSE_NO_SYMS,
     ELF_PARSE_INTERNAL_ERROR,
 } t_elf_parse_error;
 

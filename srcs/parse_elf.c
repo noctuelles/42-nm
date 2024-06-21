@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 15:05:22 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/21 13:58:19 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/21 17:04:19 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,6 @@ elf_parse_err_to_str(t_elf_parse_error error) {
     switch (error) {
         case ELF_PARSE_OK:
             return ("sucess");
-        case ELF_PARSE_FILE_TOO_SHORT:
-            return ("file too short");
-        case ELF_PARSE_UNRECOGNIZED_FORMAT:
-            return ("file format not recognized");
             /* Related to symbol parsing */
         case ELF_PARSE_INVALID_SYMBOL_SHNDX:
             return ("invalid symbol section index");
@@ -66,19 +62,17 @@ elf_parse_err_to_str(t_elf_parse_error error) {
             return ("invalid symbol table string table index");
         case ELF_PARSE_INVALID_SYMTAB_MAPPED_REGION:
             return ("invalid symbol table offset or size");
-            /* Strtab Sectio Header */
+            /* Strtab Section Header */
         case ELF_PARSE_INVALID_STRTAB_TYPE:
             return ("invalid string table type");
         case ELF_PARSE_INVALID_STRTAB_MAPPED_REGION:
             return ("invalid string table offset or size");
             /* All Section Header*/
-        case ELF_PARSE_INVALID_SHDR_NAME:
-            return ("invalid section header name");
+        case ELF_PARSE_INVALID_NAME:
+            return ("invalid name for section or symbol");
         /* Other */
         case ELF_PARSE_NO_SYMS:
             return ("no symbols");
-        case ELF_PARSE_CORRUPT_STRTABLE:
-            return ("corrupted string table");
         case ELF_PARSE_INTERNAL_ERROR:
             return ("internal error");
         default:
@@ -104,8 +98,7 @@ fill_sym_list(const t_file *file, t_syms_info *syms_info) {
             return (ret_val);
         }
 
-        /* Resolve related section name, and symbol name */
-        if (!SHN_RESERVED(sym->elf_sym.shndx)) {
+        if (!SHN_RESERVED(sym->elf_sym.shndx) && sym->elf_sym.shndx != SHN_UNDEF) {
             sym->elf_rel_shdr = parse_elf_shdr(
                 get_file_ptr_from_offset(file, syms_info->hdr.shdr_tab_off + (sym->elf_sym.shndx * syms_info->hdr.shdr_tab_ent_size)),
                 &syms_info->hdr);
@@ -115,10 +108,11 @@ fill_sym_list(const t_file *file, t_syms_info *syms_info) {
             }
             sym->rel_sec_name = get_file_ptr_from_offset(file, syms_info->shdr_shstrtab.offset + sym->elf_rel_shdr.name);
         }
+
         if (sym->elf_sym.type == STT_SECTION) {
             sym->name = sym->rel_sec_name;
         } else {
-            if ((ret_val = check_elf_name(file, &syms_info->shdr_strtab, sym->elf_rel_shdr.name)) != ELF_PARSE_OK) {
+            if ((ret_val = check_elf_name(file, &syms_info->shdr_strtab, sym->elf_sym.name)) != ELF_PARSE_OK) {
                 free(sym);
                 return (ret_val);
             }

@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 15:48:04 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/18 10:45:25 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/21 15:28:07 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 static void
 parse_elf_hdr_32(const Elf32_Ehdr *hdr, t_elf_parsed_hdr *parsed_hdr) {
-    uint64_t shdrs_offset     = 0;
+    uint32_t shdrs_offset     = 0;
     uint16_t shdrs_nbr        = 0;
     uint16_t shdrs_entry_size = 0;
     uint16_t shdrs_strndx     = 0;
@@ -65,7 +65,7 @@ parse_elf_hdr_64(const Elf64_Ehdr *header, t_elf_parsed_hdr *parsed_hdr) {
 
 t_elf_parsed_hdr
 parse_elf_hdr(const void *elf_hdr) {
-    const uint8_t   *hdr        = (const uint8_t *)elf_hdr;
+    const uint8_t   *hdr        = elf_hdr;
     t_elf_parsed_hdr parsed_hdr = {0};
 
     parsed_hdr.ei_magic[0]  = hdr[EI_MAG0];
