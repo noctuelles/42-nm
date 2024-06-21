@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 11:37:18 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/18 12:19:51 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/21 13:15:06 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,9 @@ clean:
     free(file);
     file = NULL;
 close_fd:
-    (void)close(fd);
+    if (fd != -1) {
+        (void)close(fd);
+    }
 ret:
     return (file);
 }
@@ -88,7 +90,7 @@ ret:
  * @param file The file to free.
  */
 void
-release_file(const t_file *file) {
+release_file(t_file *file) {
     if (file != NULL) {
         (void)munmap(file->buf_start, file->buf_end - file->buf_start);
         free((t_file *)file);
@@ -120,11 +122,23 @@ try_read_file(const t_file *file, size_t range_start, size_t range_end) {
     return (file->buf_start + range_start);
 }
 
+/**
+ * @brief Get the file size object
+ *
+ * @param file The file to get the size from.
+ * @return size_t The size of the file.
+ */
 size_t
 get_file_size(const t_file *file) {
     return (file->buf_end - file->buf_start);
 }
 
+/**
+ * @brief Get the name of a file.
+ *
+ * @param file The file to get the name from.
+ * @return const char* The name of the file.
+ */
 const char *
 get_file_name(const t_file *file) {
     return (file->pathname);
@@ -142,13 +156,25 @@ get_file_ptr_offset(const t_file *file, const void *ptr) {
     return ((const uint8_t *)ptr - file->buf_start);
 }
 
+/**
+ * @brief Get a pointer from an offset in a file.
+ *
+ * @param file The file to get the pointer from.
+ * @param offset The offset to get the pointer from.
+ * @return const void* The pointer at the offset in the file.
+ */
 const void *
 get_file_ptr_from_offset(const t_file *file, size_t offset) {
-    assert(file != NULL);
-    assert(offset < get_file_size(file));
     return (file->buf_start + offset);
 }
 
+/**
+ * @brief Check if a file pointer offset is valid.
+ *
+ * @param file The file to check the offset in.
+ * @param offset The offset to check.
+ * @return true if the offset is valid, false otherwise.
+ */
 bool
 is_file_ptr_offset_valid(const t_file *file, size_t offset) {
     return (offset < get_file_size(file));

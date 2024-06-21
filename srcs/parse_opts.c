@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parsing_opts.c                                     :+:      :+:    :+:   */
+/*   parse_opts.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 10:31:32 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/18 12:13:18 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/21 13:11:27 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,9 +96,6 @@ parse_argument(const char *arg, t_args_parser_state *state, void *input) {
         return (1);
     }
     elem->content = (char *)arg;
-    if (*files != NULL) {
-        g_opts.multiple_files = true;
-    }
     ft_lstadd_back(files, elem);
     return (0);
 }

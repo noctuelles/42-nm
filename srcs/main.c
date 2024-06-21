@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 10:28:48 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/21 13:09:17 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/21 13:12:05 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,6 @@ t_opts g_opts = {
     .reverse_sort           = false,
     .no_sort                = false,
     .display_help           = false,
-    .multiple_files         = false,
 };
 
 static int
@@ -92,14 +91,16 @@ display_help(const t_args_parser_config *config) {
 static int
 display_files_symbol(t_list *files) {
     t_file *curr_file = NULL;
+    size_t  nbr_files = 0;
     int     ret_val   = 0;
 
+    nbr_files = ft_lstsize(files);
     for (t_list *elem = files; elem != NULL; elem = elem->next) {
         curr_file = load_file(elem->content);
         if (curr_file == NULL) {
             continue;
         }
-        if (g_opts.multiple_files && elem != files) {
+        if (nbr_files > 1) {
             printf("\n%s:\n", get_file_name(curr_file));
         }
         if (dump_elf_syms(curr_file) != 0) {
