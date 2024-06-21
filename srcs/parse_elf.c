@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 15:05:22 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/18 12:52:33 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/21 13:58:19 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,9 @@ elf_parse_err_to_str(t_elf_parse_error error) {
             /* All Section Header*/
         case ELF_PARSE_INVALID_SHDR_NAME:
             return ("invalid section header name");
-            /* Other */
+        /* Other */
+        case ELF_PARSE_NO_SYMS:
+            return ("no symbols");
         case ELF_PARSE_CORRUPT_STRTABLE:
             return ("corrupted string table");
         case ELF_PARSE_INTERNAL_ERROR:
@@ -128,7 +130,7 @@ fill_sym_list(const t_file *file, t_syms_info *syms_info) {
             free(sym);
             return (ELF_PARSE_INTERNAL_ERROR);
         }
-        ft_lstadd_back(&syms_info->sym_list, sym_elem);
+        ft_lstadd_front(&syms_info->sym_list, sym_elem);
 
         n += syms_info->shdr_symtab.ent_size;
     }
@@ -140,6 +142,7 @@ iter_shdrs(const t_file *file, t_syms_info *syms_info) {
     t_elf_parse_error ret_val         = ELF_PARSE_OK;
     const uint8_t    *shdr_ptr        = NULL;
     const uint8_t    *shdr_strtab_ptr = NULL;
+    bool              no_syms         = true;
     size_t            i               = 0;
 
     while (i < syms_info->hdr.shdr_tab_ent_nbr) {
@@ -165,19 +168,20 @@ iter_shdrs(const t_file *file, t_syms_info *syms_info) {
             if (!g_opts.no_sort) {
                 ft_lstsort(&syms_info->sym_list, g_opts.reverse_sort ? sort_sym_rev : sort_sym);
             }
+            no_syms = false;
             print_syms(syms_info);
             ft_lstclear(&syms_info->sym_list, free);
         }
         i++;
     }
-    return (ret_val);
+    return (no_syms ? ELF_PARSE_NO_SYMS : ELF_PARSE_OK);
 }
 
 int
 dump_elf_syms(const t_file *file) {
-    const void       *elf_hdr = NULL;
-    t_elf_parse_error ret_val = ELF_PARSE_FILE_TOO_SHORT;
-    t_syms_info       syms_info;
+    const void       *elf_hdr   = NULL;
+    t_elf_parse_error ret_val   = ELF_PARSE_OK;
+    t_syms_info       syms_info = {0};
 
     errno = 0;
     if ((elf_hdr = try_read_file(file, 0, sizeof(Elf64_Ehdr))) == NULL) {
@@ -201,6 +205,6 @@ dump_elf_syms(const t_file *file) {
     }
     return (0);
 err:
-    error(get_file_name(file), elf_parse_err_to_str(ret_val));
+    ft_error(0, 0, "'%s': %s", get_file_name(file), elf_parse_err_to_str(ret_val));
     return (1);
 }
