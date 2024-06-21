@@ -6,7 +6,7 @@
 #    By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/21 20:20:49 by plouvel           #+#    #+#              #
-#    Updated: 2024/06/21 20:40:28 by plouvel          ###   ########.fr        #
+#    Updated: 2024/06/21 20:44:26 by plouvel          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,6 +17,7 @@
 
 FT_NM="ft_nm"
 CRASH_DIR="crash_file"
+SEGV=11
 
 # END OF CONFIGURATION
 
@@ -74,7 +75,8 @@ SYMTAB_NDX=$(readelf -S $FILE | grep -A1 "SYMTAB" | awk 'NR==1 {print $1}' | sed
 SYMTAB_OFF=$(printf "%d" 0x$(readelf -S $FILE | grep -A1 "SYMTAB" | awk 'NR==1 {print $5}'))
 SYMTAB_SIZE=$(printf "%d" 0x$(readelf -S $FILE | grep -A1 "SYMTAB" | awk 'NR==2 {print $1}'))
 
-SEGV_NBR=11
+echo $SYMTAB_OFF
+echo $SYMTAB_SIZE
 
 while true; do
     if [ $MESS_HDR -eq 1 ]; then
@@ -98,7 +100,7 @@ while true; do
 
     ./ft_nm $TMP > /dev/null
 
-    if [ $? -eq $((128 + $SEGV_NBR)) ]; then
+    if [ $? -eq $((128 + $SEGV)) ]; then
         mkdir -p ./crash_file/
 
         CRASH_DUMP_FILE=./crash_file/${FILE}_${RANDOM_OFFSET}_${RANDOM_BYTE_VALUE}
