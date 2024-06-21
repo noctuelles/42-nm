@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 15:06:57 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/18 12:11:09 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/18 12:42:09 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,18 +128,21 @@ print_syms(const t_syms_info *syms_info) {
 
         if (syms_info->hdr.ei_class == ELFCLASS32) {
             if (sym->elf_sym.shndx == SHN_UNDEF) {
-                printf("        ");
+                ft_putstr("        ");
             } else {
-                printf("%08x", (uint32_t)sym->elf_sym.value);
+                print_uint32_zero_pad((uint32_t)sym->elf_sym.value);
             }
         } else if (syms_info->hdr.ei_class == ELFCLASS64) {
             if (sym->elf_sym.shndx == SHN_UNDEF) {
-                printf("                ");
+                ft_putstr("                ");
             } else {
-                printf("%016lx", (uint64_t)sym->elf_sym.value);
+                print_uint64_zero_pad((uint64_t)sym->elf_sym.value);
             }
         }
-        printf(" %c %s\n", type, sym->name);
+        ft_putchar(' ');
+        ft_putchar(type);
+        ft_putchar(' ');
+        ft_putstr(sym->name);
     }
 }
 

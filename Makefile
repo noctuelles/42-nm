@@ -6,7 +6,7 @@
 #    By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/05 11:17:26 by plouvel           #+#    #+#              #
-#    Updated: 2024/06/17 12:32:21 by plouvel          ###   ########.fr        #
+#    Updated: 2024/06/18 12:05:57 by plouvel          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,6 +34,7 @@ SRCS=main.c \
 	 parse_elf_hdr.c \
 	 parse_elf_shdr.c \
 	 parse_elf_symbol.c \
+	 parse_elf_utils.c \
 	 parse_elf.c \
 	 parsing_opts.c \
 	 symbol.c \

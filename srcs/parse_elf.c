@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 15:05:22 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/18 12:22:23 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/18 12:52:33 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,6 @@ fill_sym_list(const t_file *file, t_syms_info *syms_info) {
 
         n += syms_info->shdr_symtab.ent_size;
     }
-
     return (ret_val);
 }
 
@@ -202,6 +201,6 @@ dump_elf_syms(const t_file *file) {
     }
     return (0);
 err:
-    ft_error(0, errno, "%s: %s", get_file_name(file), elf_parse_err_to_str(ret_val));
+    error(get_file_name(file), elf_parse_err_to_str(ret_val));
     return (1);
 }

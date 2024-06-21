@@ -6,12 +6,14 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 15:17:15 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/14 14:30:40 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/21 08:03:26 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
+#include <unistd.h>
 
 #define SWAP_UINT16(x) (((x) >> 8U) | ((x) << 8U))
 #define SWAP_UINT32(x) (((x) >> 24U) | (((x) >> 8U) & 0x0000FF00U) | (((x) << 8U) & 0x00FF0000U) | ((x) << 24U))
@@ -20,6 +22,9 @@
      (((x) << 8U) & 0x000000FF00000000U) | (((x) << 24U) & 0x0000FF0000000000U) | (((x) << 40U) & 0x00FF000000000000U) | ((x) << 56U))
 
 #include "conf.h"
+#include "libft.h"
+
+extern char *program_invocation_short_name;
 
 uint16_t
 uint16_t_BE_to_host_byte_order(uint16_t value) {
