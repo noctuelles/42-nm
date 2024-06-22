@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 14:16:31 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/21 17:04:01 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/22 19:30:22 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,11 @@ typedef enum e_elf_parse_error {
     ELF_PARSE_INVALID_SYMTAB_SIZE,
     ELF_PARSE_INVALID_SYMTAB_STRTAB,
     ELF_PARSE_INVALID_SYMTAB_MAPPED_REGION,
+
+    /* Symbols */
+
+    ELF_PARSE_INVALID_SYM_NAME,
+    ELF_PARSE_INVALID_SEC_NAME,
 
     /* String table */
 
@@ -92,7 +97,7 @@ t_elf_parse_error check_elf_shdr_strtab(const t_file *file, const t_elf_parsed_s
 t_elf_parsed_sym  parse_elf_sym(const void *symbol, const t_elf_parsed_hdr *hdr);
 t_elf_parse_error check_elf_sym(const t_elf_parsed_sym *sym, const t_elf_parsed_hdr *hdr);
 
-t_elf_parse_error check_elf_name(const t_file *file, const t_elf_parsed_shdr *strtab, uint32_t name);
+t_elf_parse_error check_elf_name(const t_file *file, const t_elf_parsed_shdr *strtab, uint32_t name, t_elf_parse_error ret_err);
 
 int dump_elf_syms(const t_file *file);
 

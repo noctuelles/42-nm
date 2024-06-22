@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 15:06:57 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/21 14:24:15 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/22 19:10:47 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,8 +98,10 @@ decode_symbol_type(const t_sym *symbol) {
     }
     if (symbol->elf_sym.shndx == SHN_ABS) {
         c = 'a';
-    } else {
+    } else if (symbol->has_rel_sec) {
         c = decode_sym_sec_type(&symbol->elf_rel_shdr, symbol->rel_sec_name);
+    } else {
+        return ('?');
     }
     if (IS_SET(symbol->elf_sym.bind, STB_GLOBAL)) {
         c = ft_toupper(c);

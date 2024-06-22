@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 16:56:41 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/18 12:11:18 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/22 19:05:52 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ typedef struct s_sym {
     const char       *rel_sec_name; /* symbols's related section name */
     t_elf_parsed_sym  elf_sym;      /* elf file values */
     t_elf_parsed_shdr elf_rel_shdr; /* related section header */
+    bool              has_rel_sec;  /* true if the symbol has a related section */
 } t_sym;
 
 typedef struct s_syms_info {

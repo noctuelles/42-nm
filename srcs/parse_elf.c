@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 15:05:22 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/21 17:04:19 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/22 19:31:40 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,8 +68,10 @@ elf_parse_err_to_str(t_elf_parse_error error) {
         case ELF_PARSE_INVALID_STRTAB_MAPPED_REGION:
             return ("invalid string table offset or size");
             /* All Section Header*/
-        case ELF_PARSE_INVALID_NAME:
-            return ("invalid name for section or symbol");
+        case ELF_PARSE_INVALID_SYM_NAME:
+            return ("invalid symbol name");
+        case ELF_PARSE_INVALID_SEC_NAME:
+            return ("invalid section name");
         /* Other */
         case ELF_PARSE_NO_SYMS:
             return ("no symbols");
@@ -102,17 +104,23 @@ fill_sym_list(const t_file *file, t_syms_info *syms_info) {
             sym->elf_rel_shdr = parse_elf_shdr(
                 get_file_ptr_from_offset(file, syms_info->hdr.shdr_tab_off + (sym->elf_sym.shndx * syms_info->hdr.shdr_tab_ent_size)),
                 &syms_info->hdr);
-            if ((ret_val = check_elf_name(file, &syms_info->shdr_shstrtab, sym->elf_rel_shdr.name)) != ELF_PARSE_OK) {
+            if ((ret_val = check_elf_name(file, &syms_info->shdr_shstrtab, sym->elf_rel_shdr.name, ELF_PARSE_INVALID_SEC_NAME)) !=
+                ELF_PARSE_OK) {
                 free(sym);
                 return (ret_val);
             }
+            sym->has_rel_sec  = true;
             sym->rel_sec_name = get_file_ptr_from_offset(file, syms_info->shdr_shstrtab.offset + sym->elf_rel_shdr.name);
         }
 
         if (sym->elf_sym.type == STT_SECTION) {
-            sym->name = sym->rel_sec_name;
+            if (!sym->has_rel_sec) {
+                sym->name = "<corrupt>";
+            } else {
+                sym->name = sym->rel_sec_name;
+            }
         } else {
-            if ((ret_val = check_elf_name(file, &syms_info->shdr_strtab, sym->elf_sym.name)) != ELF_PARSE_OK) {
+            if ((ret_val = check_elf_name(file, &syms_info->shdr_strtab, sym->elf_sym.name, ELF_PARSE_INVALID_SYM_NAME)) != ELF_PARSE_OK) {
                 free(sym);
                 return (ret_val);
             }
