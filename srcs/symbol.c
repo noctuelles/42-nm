@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 15:06:57 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/22 19:10:47 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/24 13:20:08 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,9 @@
 #include "ft_nm.h"
 #include "libft.h"
 #include "utils.h"
+
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 static char
 decode_sym_sec_type(const t_elf_parsed_shdr *sec, const char *sec_name) {
@@ -79,6 +82,9 @@ decode_symbol_type(const t_sym *symbol) {
     if (symbol->elf_rel_shdr.type == STT_GNU_IFUNC) {
         return ('i');
     }
+    if (IS_SET(symbol->elf_sym.bind, STB_GNU_UNIQUE)) {
+        return ('u');
+    }
     if (IS_SET(symbol->elf_sym.bind, STB_WEAK)) {
         if (IS_SET(symbol->elf_sym.type, STT_OBJECT)) {
             /* The symbol is a weak object, with a default value specified. */
@@ -87,9 +93,6 @@ decode_symbol_type(const t_sym *symbol) {
             /* The symbol is a weak symbol, with a default value specified. */
             return ('W');
         }
-    }
-    if (IS_SET(symbol->elf_sym.bind, STB_GNU_UNIQUE)) {
-        return ('u');
     }
     if (!(IS_SET(symbol->elf_sym.bind, STB_GLOBAL) || IS_SET(symbol->elf_sym.bind, STB_LOCAL))) {
         /* If the symbol binding is not global or local, this is some processor specific semantics, since we've already checked that the
@@ -149,14 +152,20 @@ int
 sort_sym(const void *a, const void *b) {
     const t_sym *sym_a = a;
     const t_sym *sym_b = b;
+    const t_sym *tmp   = NULL;
+    int          cmp   = 0;
 
-    return (ft_strcmp(sym_a->name, sym_b->name));
-}
+    if (g_opts.reverse_sort) {
+        tmp   = sym_a;
+        sym_a = sym_b;
+        sym_b = tmp;
+    }
 
-int
-sort_sym_rev(const void *a, const void *b) {
-    const t_sym *sym_a = a;
-    const t_sym *sym_b = b;
+    cmp = ft_strcmp(sym_a->name, sym_b->name);
 
-    return (ft_strcmp(sym_b->name, sym_a->name));
+    if (cmp == 0) {
+        return (MAX(sym_a->elf_sym.value, sym_b->elf_sym.value) - MIN(sym_a->elf_sym.value, sym_b->elf_sym.value));
+    }
+
+    return (cmp);
 }

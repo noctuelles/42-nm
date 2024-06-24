@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 15:05:22 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/22 19:31:40 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/24 10:38:06 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,7 +168,7 @@ iter_shdrs(const t_file *file, t_syms_info *syms_info) {
             }
 
             if (!g_opts.no_sort) {
-                ft_lstsort(&syms_info->sym_list, g_opts.reverse_sort ? sort_sym_rev : sort_sym);
+                ft_lstsort(&syms_info->sym_list, sort_sym);
             }
             no_syms = false;
             print_syms(syms_info);

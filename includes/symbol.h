@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 16:56:41 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/22 19:05:52 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/06/24 10:37:54 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,5 @@ typedef struct s_syms_info {
 
 void print_syms(const t_syms_info *syms_info);
 int  sort_sym(const void *a, const void *b);
-int  sort_sym_rev(const void *a, const void *b);
 
 #endif

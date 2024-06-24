@@ -9,4 +9,6 @@
 !.clang-format
 !.gitignore
 !.gitsubmodules
+!mesself.sh
+!nm_tester.sh
 en.subject.pdf

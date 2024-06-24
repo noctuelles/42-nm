@@ -6,7 +6,7 @@
 #    By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/24 11:12:02 by plouvel           #+#    #+#              #
-#    Updated: 2024/06/24 11:46:43 by plouvel          ###   ########.fr        #
+#    Updated: 2024/06/24 13:24:07 by plouvel          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -77,22 +77,30 @@ YOUR_NM=./ft_nm
 SYS_NM=nm
 DIFF=diff
 DIFF_SAVE_PATH="diffs"
-OPTS=""
+OPTS="-ar"
+
+SAVE_EVEN_IF_OK=1
 
 # END OF CONFIGURATION
 
 KO_COUNT=0
 OK_COUNT=0
-SEGV=11
 
 for DIR in $DIRS_TO_SCAN; do
+    echo "Command launched to test your nm: ${BIWhite}$YOUR_NM $OPTS${NC}"
+    echo "Command launched to test the system nm: ${BIWhite}$SYS_NM $OPTS${NC}\n"
+
     echo -n "Scanning ${BIWhite}$DIR${NC}... "
 
-    ELF_EXECUTABLES=$(find $DIR -type f -executable -exec file {} \; | grep -i 'elf\|not stripped' | awk -F ': ' '{print $1}')
+    ELF_EXECUTABLES=$(find $DIR -type f -executable -exec file {} \; | grep -i '.*elf.*not stripped' | awk -F ': ' '{print $1}')
     ELF_EXECUTABLES_NBR=$(echo $ELF_EXECUTABLES | wc -w)
 
-    echo "${Green}found${NC} ${ELF_EXECUTABLES_NBR} ELF executables !"
-    sleep 2
+    echo "${Green}found${NC} ${ELF_EXECUTABLES_NBR} ELF executables to test.\n"
+
+    if [ -z "$ELF_EXECUTABLES" ]; then
+        echo "No ELF executables found in ${BIWhite}$DIR${NC}... skipping."
+        continue
+    fi
 
     for EXEC in $ELF_EXECUTABLES; do
         TMP_A=$(mktemp)
@@ -104,7 +112,7 @@ for DIR in $DIRS_TO_SCAN; do
 
         $DIFF $TMP_A $TMP_B > $TMP_DIFF
 
-        if [ $? -ne 0 ]; then
+        if [ $? -ne 0 ] || [ $SAVE_EVEN_IF_OK -eq 1 ]; then
             mkdir -p $DIFF_SAVE_PATH
 
             EXEC_CLEAN=$(echo $EXEC | cut -c2-)
@@ -114,23 +122,19 @@ for DIR in $DIRS_TO_SCAN; do
             cp $TMP_A $DIFF_SAVE_PATH/$EXEC_CLEAN/$YOUR_NM.output
             cp $TMP_B $DIFF_SAVE_PATH/$EXEC_CLEAN/$SYS_NM.output
             cp $TMP_DIFF $DIFF_SAVE_PATH/$EXEC_CLEAN/output.diff
-
+        fi
+        if [ $? -ne 0 ]; then
             echo "$EXEC : ${Red}KO${NC}."
-
             KO_COUNT=$((KO_COUNT + 1))
         else
             echo "$EXEC : ${Green}OK${NC}."
-
             OK_COUNT=$((OK_COUNT + 1))
         fi
 
         rm $TMP_A $TMP_B $TMP_DIFF
     done
 
-    echo
-    echo "Result for ${BIWhite}${DIR}${NC} : ${IGreen}$OK_COUNT${NC} OK, ${IRed}$KO_COUNT${NC} KO on ${BIWhite}${ELF_EXECUTABLES_NBR}${NC} files. You can find more details in the folder $DIFF_SAVE_PATH."
-    echo
-    sleep 2
+    echo "\nResult for ${BIWhite}${DIR}${NC} : ${IGreen}$OK_COUNT${NC} OK, ${IRed}$KO_COUNT${NC} KO on ${BIWhite}${ELF_EXECUTABLES_NBR}${NC} files. You can find more details in the folder $DIFF_SAVE_PATH."
 
     OK_COUNT=0
     KO_COUNT=0
