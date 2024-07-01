@@ -6,7 +6,7 @@
 /*   By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 10:28:48 by plouvel           #+#    #+#             */
-/*   Updated: 2024/06/21 13:12:05 by plouvel          ###   ########.fr       */
+/*   Updated: 2024/07/01 11:25:23 by plouvel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,7 @@ display_files_symbol(t_list *files) {
     for (t_list *elem = files; elem != NULL; elem = elem->next) {
         curr_file = load_file(elem->content);
         if (curr_file == NULL) {
+            ret_val = 1;
             continue;
         }
         if (nbr_files > 1) {
