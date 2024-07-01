@@ -6,7 +6,7 @@
 #    By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/24 11:12:02 by plouvel           #+#    #+#              #
-#    Updated: 2024/06/24 13:24:07 by plouvel          ###   ########.fr        #
+#    Updated: 2024/07/01 11:13:20 by plouvel          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -77,7 +77,7 @@ YOUR_NM=./ft_nm
 SYS_NM=nm
 DIFF=diff
 DIFF_SAVE_PATH="diffs"
-OPTS="-ar"
+OPTS="-uar"
 
 SAVE_EVEN_IF_OK=1
 

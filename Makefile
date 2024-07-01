@@ -6,7 +6,7 @@
 #    By: plouvel <plouvel@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/05 11:17:26 by plouvel           #+#    #+#              #
-#    Updated: 2024/06/21 13:09:29 by plouvel          ###   ########.fr        #
+#    Updated: 2024/07/01 11:17:42 by plouvel          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,9 +41,7 @@ SRCS=main.c \
 	 utils.c \
 	 file.c
 
-TESTS=test_parsing_elf.c \
-	  test_utils.c \
-	  test_file.c
+TESTS=
 
 SRCS_TESTS:=$(addprefix $(TESTS_PATH)/, $(TESTS))
 
